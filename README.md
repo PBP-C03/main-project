@@ -33,6 +33,7 @@ Dengan berbagai fitur ini, GeTheBooks tidak hanya menyediakan platform untuk ber
 
 ## Sumber *dataset*
 https://www.kaggle.com/datasets/sootersaalu/amazon-top-50-bestselling-books-2009-2019 
+https://www.kaggle.com/datasets/lukaanicin/book-covers-dataset
 
 ## Peran pengguna
 ### User belum terdaftar
