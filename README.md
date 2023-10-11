@@ -26,25 +26,25 @@ Dengan berbagai fitur ini, GeTheBooks tidak hanya menyediakan platform untuk ber
 
 ## Daftar Modul
 1. Fitur Upload Buku ke katalog 
-- Developer : Kaisa Dian Ferdinand
-- Deskripsi : Fitur untuk menambahkan buku baru yang akan dijual ke dalam katalog *website*. Pengguna dapat dengan bebas mengisi nama buku, harga buku, gambar, serta penulis
+    - Developer : Kaisa Dian Ferdinand
+    - Deskripsi : Fitur untuk menambahkan buku baru yang akan dijual ke dalam katalog *website*. Pengguna dapat dengan bebas mengisi nama buku, harga buku, gambar, serta penulis
 
 
 2. Fitur QnA Forum 
-- Developer : Kezia Natalia Theodora N.
-- Deskripsi : Fitur sebagai tempat diskusi pengguna terhadap buku - buku yang terdaftar dalam katalog *website*
+    - Developer : Kezia Natalia Theodora N.
+    - Deskripsi : Fitur sebagai tempat diskusi pengguna terhadap buku - buku yang terdaftar dalam katalog *website*
 
 3. Fitur Review and Rating 
-- Developer : Steven Faustin Orginata
-- Deskripsi : Fitur ini memungkinkan pengguna untuk memberikan ulasan dan penilaian terhadap buku-buku yang mereka beli atau baca
+    - Developer : Steven Faustin Orginata
+    - Deskripsi : Fitur ini memungkinkan pengguna untuk memberikan ulasan dan penilaian terhadap buku-buku yang mereka beli atau baca
 
 4. Fitur Keranjang Produk 
-- Developer : Afsar Rakha Farrasandi
-- Deskripsi :  Fitur untuk menyimpan buku di keranjang belanja yang ingin dibeli oleh pengguna sebelum melakukan pembayaran. Pengguna dapat mengatur jumlah buku yang ingin dibeli sesuai dengan yang diinginkan.
+    - Developer : Afsar Rakha Farrasandi
+    - Deskripsi :  Fitur untuk menyimpan buku di keranjang belanja yang ingin dibeli oleh pengguna sebelum melakukan pembayaran. Pengguna dapat mengatur jumlah buku yang ingin dibeli sesuai dengan yang diinginkan.
 
 5. Fitur *Checkout* Produk 
-- Developer : Yosef Nuraga Wicaksana
-- Deskripsi : Fitur untuk melakukan *checkout* buku-buku yang sudah ada di keranjang. Pengguna akan diminta informasi mengenai email, dll.
+    - Developer : Yosef Nuraga Wicaksana
+    - Deskripsi : Fitur untuk melakukan *checkout* buku-buku yang sudah ada di keranjang. Pengguna akan diminta informasi mengenai email, dll.
 
 
 ## Sumber referensi *dataset* opsional
@@ -68,9 +68,9 @@ Dengan berbagai fitur ini, GeTheBooks tidak hanya menyediakan platform untuk ber
 
 ### Admin (Super User)
 1. Manajemen Konten: 
-- Menambahkan dan menghapus katalog buku 
-- Mengakses semua modul yang tersedia
+    - Menambahkan dan menghapus katalog buku 
+    - Mengakses semua modul yang tersedia
 2. Manajemen Pengguna: 
-- Mengubah status atau hapus akun.
+    - Mengubah status atau hapus akun.
 
 
