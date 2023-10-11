@@ -1,6 +1,7 @@
 # GetTheBooks
 
-## Anggota Kelompok:
+## Pengembang Aplikasi
+Proyek ini dibuat oleh kelompok C03 yang beranggotakan sebagai berikut:
 1. Afsar Rakha Farrasandi - 2206028636
 2. Kaisa Dian Ferdinand - 2206816494
 3. Yosef Nuraga Wicaksana - 2206082751
@@ -11,7 +12,7 @@
 
 ### GeTheBooks 
 
-## Cerita aplikasi
+## Cerita aplikasi dan manfaat aplikasi
 GeTheBooks adalah sebuah aplikasi revolusioner untuk berjualan buku, yang didesain untuk memperkuat minat baca di kalangan masyarakat Indonesia. Pengguna dapat dengan mudah mengunggah katalog buku pribadi mereka ke dalam aplikasi, sehingga buku-buku tersebut dapat ditemukan dan diakses oleh para pembeli potensial. Selain itu, GeTheBooks juga menyediakan beragam fitur yang mempermudah proses penjualan, termasuk opsi untuk menambahkan deskripsi, menetapkan harga, dan mengelola inventaris buku. Dengan demikian, para penjual dapat memiliki kendali penuh atas aktivitas jual-beli mereka dan memberikan pengalaman yang lebih baik bagi pembeli yang mencari buku-buku yang sesuai dengan minat dan preferensi mereka. Hal ini membuat GeTheBooks menjadi platform ideal bagi mereka yang ingin menjual dan berbagi kekayaan literatur mereka dengan komunitas yang berbagi minat.
 
 Selain fitur-fitur utama yang telah disebutkan di atas, GeTheBooks juga menawarkan berbagai fasilitas tambahan yang memperkaya pengalaman pengguna. Salah satunya adalah Fitur QnA Forum, yang memungkinkan pengguna untuk berinteraksi dan berbagi pengetahuan terkait buku-buku yang mereka jual atau minati. Forum ini memberikan ruang bagi diskusi, tanya jawab, serta sarana untuk saling memberi rekomendasi antaranggota komunitas.
@@ -24,11 +25,26 @@ Dengan berbagai fitur ini, GeTheBooks tidak hanya menyediakan platform untuk ber
 
 
 ## Daftar Modul
-1. Fitur Upload Buku ke katalog
-2. Fitur QnA Forum
-3. Fitur Review and Rating
-4. Fitur Keranjang Produk
-5. Fitur Checkout Produk
+1. Fitur Upload Buku ke katalog 
+- Developer : Kaisa Dian Ferdinand
+- Deskripsi : Fitur untuk menambahkan buku baru yang akan dijual ke dalam katalog *website*. Pengguna dapat dengan bebas mengisi nama buku, harga buku, gambar, serta penulis
+
+
+2. Fitur QnA Forum 
+- Developer : Kezia Natalia Theodora N.
+- Deskripsi : Fitur sebagai tempat diskusi pengguna terhadap buku - buku yang terdaftar dalam katalog *website*
+
+3. Fitur Review and Rating 
+- Developer : Steven Faustin Orginata
+- Deskripsi : Fitur ini memungkinkan pengguna untuk memberikan ulasan dan penilaian terhadap buku-buku yang mereka beli atau baca
+
+4. Fitur Keranjang Produk 
+- Developer : Afsar Rakha Farrasandi
+- Deskripsi :  Fitur untuk menyimpan buku di keranjang belanja yang ingin dibeli oleh pengguna sebelum melakukan pembayaran. Pengguna dapat mengatur jumlah buku yang ingin dibeli sesuai dengan yang diinginkan.
+
+5. Fitur *Checkout* Produk 
+- Developer : Yosef Nuraga Wicaksana
+- Deskripsi : Fitur untuk melakukan *checkout* buku-buku yang sudah ada di keranjang. Pengguna akan diminta informasi mengenai email, dll.
 
 
 ## Sumber referensi *dataset* opsional
@@ -36,11 +52,11 @@ Dengan berbagai fitur ini, GeTheBooks tidak hanya menyediakan platform untuk ber
 - https://www.kaggle.com/datasets/lukaanicin/book-covers-dataset
 - https://www.kaggle.com/datasets/arashnic/book-recommendation-dataset/ 
 
+
 ## Peran pengguna
 ### User belum terdaftar
 1. Mengakses homepage
 2. Jika mengakses fitur-fitur seperti Menjual Buku, QnA Forum, Review & Rating, Keranjang Produk, Checkout Produk serta Profile akan keluar notif untuk melakukan login/sign up
-
 
 
 ### User terdaftar
