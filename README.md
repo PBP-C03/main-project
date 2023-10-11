@@ -14,39 +14,29 @@
 ## Cerita aplikasi
 
 ## Daftar Modul
-1. Sign In & Sign Up.
-2. Homepage dengan tombol Play, Create (untuk menambahkan buku pendek), Leaderboard, dan Profile.
-3. Fitur Wishlist Book.
-4. Fitur Favorite Book.
-5. Fitur Favorite Writer.
-6. Fitur Upload Your Book!
-7. Fitur Review & Rate Book
+1. Fitur Upload Katalog Buku 
+Memungkinkan pengguna untuk mengunggah buku pendek pribadi mereka untuk dibagikan dengan komunitas.
+2. Fitur QnA Forum
+3. Fitur Review and Rating
+4. Fitur Keranjang Produk
+5. Fitur Checkout Produk
+
 
 ## Sumber *dataset*
 
 ## Peran pengguna
 ### User belum terdaftar
-1. Mengakses leaderboard di homepage
-2. Jika mengakses Play, Create, atau Profile akan keluar notif untuk melakukan login/sign up
+1. Mengakses *homepage*
+
 
 ### User terdaftar
-1. Mengakses modul buku
-2. Mengakses halaman profile
-3. Mengakses seluruh modul user yang belum terdaftar
-4. Mengakses leaderboard
-5. Mengakses modul membuat buku pendek
+1. Mengakses katalog
+2. Mengakses modul Topup
+3. Mengakses modul QNA Forum
+4. Mereview dan rating produk
+5. Checkout modul
 
 ## Admin (Super User)
-1. Manajemen Konten: 
-2. Menambah, mengedit, dan hapus buku.
-3. Manajemen Pengguna: 
-4. Akses dan ubah info pengguna. 
-5. Tindakan admin (ubah status atau hapus akun). \
-6. Mengelola Kategori dan Genre: 
-7. Tambah, edit, atau hapus kategori dan genre. 
-8. Mengelola Fitur dan Fungsionalitas: 
-9. Memastikan semua fitur berjalan optimal. 
-10. Tambah atau hapus fitur jika diperlukan. 
-11. Monitoring dan Analisis: 
-12. Pantau aktivitas pengguna. 
-13. Analisis buku/popularitas penulis.
+1. Menambah produk pada katalog
+2. Mengakses modul QNA Forum
+3. Menyetujui topup saldo pengguna
