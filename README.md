@@ -31,10 +31,10 @@ Dengan berbagai fitur ini, GeTheBooks tidak hanya menyediakan platform untuk ber
 5. Fitur Checkout Produk
 
 
-## Sumber *dataset*
-https://www.kaggle.com/datasets/sootersaalu/amazon-top-50-bestselling-books-2009-2019 
-https://www.kaggle.com/datasets/lukaanicin/book-covers-dataset
-https://www.kaggle.com/datasets/arashnic/book-recommendation-dataset/ 
+## Sumber referensi *dataset* opsional
+- https://www.kaggle.com/datasets/sootersaalu/amazon-top-50-bestselling-books-2009-2019 
+- https://www.kaggle.com/datasets/lukaanicin/book-covers-dataset
+- https://www.kaggle.com/datasets/arashnic/book-recommendation-dataset/ 
 
 ## Peran pengguna
 ### User belum terdaftar
@@ -50,7 +50,7 @@ https://www.kaggle.com/datasets/arashnic/book-recommendation-dataset/
 4. Melakukan checkout pada buku yang sudah dimasukkan ke keranjang
 
 
-## Admin (Super User)
+### Admin (Super User)
 1. Manajemen Konten: 
 - Menambahkan dan menghapus katalog buku 
 - Mengakses semua modul yang tersedia
