@@ -24,8 +24,7 @@ Dengan berbagai fitur ini, GeTheBooks tidak hanya menyediakan platform untuk ber
 
 
 ## Daftar Modul
-1. Fitur Upload Katalog Buku 
-Memungkinkan pengguna untuk mengunggah buku pendek pribadi mereka untuk dibagikan dengan komunitas.
+1. Fitur Upload Buku ke katalog
 2. Fitur QnA Forum
 3. Fitur Review and Rating
 4. Fitur Keranjang Produk
