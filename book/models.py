@@ -9,3 +9,4 @@ class Book(models.Model):
     publisher = models.TextField(blank=True, null=True)
     image = models.TextField(blank=True, null=True)
     price = models.IntegerField(blank=True, null=True)
+    stocks = models.IntegerField(blank=True, null=True)
