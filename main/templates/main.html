@@ -1,0 +1,205 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GeTheBooks</title>
+    <style>
+        h2 {
+            width: 450px;
+            border-radius: 25px;
+            align-items: center;
+            text-align: center;
+            margin: auto;
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #FFDC00;
+            box-shadow:0 2px 4px rgba(0, 0, 0, 0.1);
+            color: black;
+        }
+        .container {
+            display: flex;
+            flex-wrap: nowrap;
+            overflow-x: scroll; /* Aktifkan scroll horizontal */
+            padding: 20px;
+            justify-content: flex-start; /* Geser kartu ke samping */
+        }
+
+        .book-card {
+            width: 300px; 
+            height: auto;
+            margin: 10px;
+            padding: 20px;
+            transition: transform 0.3s ease; 
+            border-radius: 30px; 
+            box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.2); 
+            text-align: center;
+            background-color: #f2f2f2;
+        }
+
+        .book-details {
+            font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+            font-size: medium;
+        }
+
+        .book-image {
+            margin-bottom: 15px;
+            max-width: 150px; 
+            max-height: 200px; 
+
+        }
+
+        .book-card:hover {
+            transform: scale(1.05); 
+        }
+        nav {
+            background-color: #FFDC00;
+            padding: 20px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 10px;
+            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo-container img {
+            width: 100px;
+            height: 60px;
+            margin-right: 10px;
+        }
+
+        .logo {
+            font-size: 24px;
+            color: black;
+            text-decoration: none;
+            font-weight: bold;
+            border-radius: 5px;
+            transition: background-color 0.2s ease, color 0.2s ease;
+        }
+
+        ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+        }
+
+        li {
+            margin: 0 15px;
+            text-decoration: none;
+            font-weight: bold;
+            border-radius: 5px;
+            transition: background-color 0.2s ease, color 0.2s ease;
+        }
+        
+        li a {
+            text-decoration: none;
+            color: black;
+        }
+
+        /* Add hover styles for links and logo */
+        li:hover {
+            background-color: #9d8e2f;
+            color: white;
+        }
+
+        .buy-button {
+            background-color: #FFDC00;
+            color: black;
+            border: none;
+            border-radius: 5px;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .buy-button:hover {
+            background-color: #9d8e2f;
+            color: white;
+        }
+        
+        .rectangle {
+            margin: auto;
+            margin-top: 30px;
+            width: 1110px;
+            height: 360px;
+            top: 0;
+            left: 0;
+            background-color: #ffdc00;
+            border-radius: 35.33px;
+        }
+
+        .harga {
+            color: #008CBA;
+        }
+
+    </style>
+</head>
+
+<body style="background-color: #FAF2D3;">
+
+    <nav>
+        <div class="logo-container">
+            <img src="https://user-images.githubusercontent.com/122893320/277785554-9500d430-d120-41e2-be26-3c7602b062fb.png" alt="GeTheBooks Logo">
+            <a class="logo" href="/">GeTheBooks</a>
+        </div>
+        <ul>
+            <li><a href="#">Beranda</a></li>
+            <li><a href="#">Tentang Kami</a></li>
+            <li><a href="#">Kontak</a></li>
+            <li><a href="#">(CREATE)</a></li>
+            <li><a href="#">(CART)</a></li>
+            <li><a href="#">(ACCOUNT)</a></li>
+            {% if user.is_authenticated %}
+            <li>
+                <a href="{% url 'main:logout' %}">
+                    <button>
+                        Logout
+                    </button>
+                </a>
+            </li>
+            {% else %}
+            <li>
+                <a href="{% url 'main:login' %}">
+                    <button>
+                        Login
+                    </button>
+                </a>
+            </li>
+            {% endif %}
+
+        </ul>
+    </nav>
+
+    <div class="rectangle"></div>
+    <h2>Book Recommendations</h2>
+
+    <div class="container">
+        {% for book in books %}
+        <div class="book-card">
+            <div class="book-details">
+                <div class="book-image">
+                    <img src="{{ book.image }}" alt="{{ book.title }}" width="150" height="200">
+                </div>
+                <p>{{ book.author }}</p>
+                <p>{{ book.title }}</p>
+                <div class="harga">
+                    <p>IDR {{ book.price }}</p>
+                </div>
+                <button class="buy-button">Beli</button>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+</body>
+</html>
+{% endblock content %}
