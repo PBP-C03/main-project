@@ -1,12 +1,16 @@
 from django.shortcuts import render
 from book.models import Book
+from main.models import Profile
 from django.shortcuts import redirect
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages  
 from django.contrib.auth import authenticate, login
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
-
+from django.http import HttpResponse,HttpResponseNotFound
+from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
+from django.core.serializers import serialize
 def show_main(request):
     books = Book.objects.all()
     context = {
@@ -33,7 +37,9 @@ def signup(request):
     if request.method == "POST":
         form = UserCreationForm(request.POST)
         if form.is_valid():
-            form.save()
+            user = form.save()
+            profile = Profile(user = user, saldo = 0)
+            profile.save()
             messages.success(request, 'Your account has been successfully created!')
             return redirect('main:login')
         
@@ -50,10 +56,41 @@ def login_user(request):
             return redirect('main:show_main')
         else:
             messages.info(request, 'Sorry, incorrect username or password. Please try again.')
-    context = {}
-    return render(request, 'login.html', context)
+    return render(request, 'login.html')
 
 def logout_user(request):
     logout(request)
     return redirect('main:login')
+
+@login_required
+def account_user(request):
+    profile = Profile.objects.get(user = request.user)
+    context = {
+        'profile' : profile
+    }
+    return render(request,'profile.html',context)
+
+@csrf_exempt
+def insert_balance(request):
+    if request.method == 'POST':
+        jumlah = int(request.POST.get("jumlah"))
+        profile = Profile.objects.get(user=request.user)
+        profile.saldo += jumlah
+        profile.save()
+        return HttpResponse(b"CREATED", status=201)
+
+    return HttpResponseNotFound()
+
+    
+def get_saldo(request):
+    if request.method == 'GET':
+        profile = Profile.objects.filter(user=request.user)
+        print(serialize('json', profile))
+        return HttpResponse(serialize('json', profile))
+    return HttpResponseNotFound()
+
+    
+
+
+
 

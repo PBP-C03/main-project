@@ -1,12 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<!DOCTYPE html>
-<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GeTheBooks</title>
     <style>
         h2 {
             width: 450px;
@@ -55,61 +50,6 @@
         .book-card:hover {
             transform: scale(1.05); 
         }
-        nav {
-            background-color: #FFDC00;
-            padding: 20px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-radius: 10px;
-            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
-        }
-
-        .logo-container {
-            display: flex;
-            align-items: center;
-        }
-
-        .logo-container img {
-            width: 100px;
-            height: 60px;
-            margin-right: 10px;
-        }
-
-        .logo {
-            font-size: 24px;
-            color: black;
-            text-decoration: none;
-            font-weight: bold;
-            border-radius: 5px;
-            transition: background-color 0.2s ease, color 0.2s ease;
-        }
-
-        ul {
-            list-style-type: none;
-            margin: 0;
-            padding: 0;
-            display: flex;
-        }
-
-        li {
-            margin: 0 15px;
-            text-decoration: none;
-            font-weight: bold;
-            border-radius: 5px;
-            transition: background-color 0.2s ease, color 0.2s ease;
-        }
-        
-        li a {
-            text-decoration: none;
-            color: black;
-        }
-
-        /* Add hover styles for links and logo */
-        li:hover {
-            background-color: #9d8e2f;
-            color: white;
-        }
 
         .buy-button {
             background-color: #FFDC00;
@@ -140,43 +80,14 @@
         .harga {
             color: #008CBA;
         }
+        body {
+            background-color: #FAF2D3;
+        }
 
     </style>
 </head>
 
 <body style="background-color: #FAF2D3;">
-    {% include 'navbar.html' %} 
-    <!-- <nav>
-        <div class="logo-container">
-            <img src="https://user-images.githubusercontent.com/122893320/277785554-9500d430-d120-41e2-be26-3c7602b062fb.png" alt="GeTheBooks Logo">
-            <a class="logo" href="/">GeTheBooks</a>
-        </div>
-        <ul>
-            <li><a href="#">Home</a></li>
-            <li><a href="{% url 'main:show_catalog' %}">Katalog</a></li>
-            <li><a href="#">QnA Forum</a></li>
-            <li><a href="#">(CART)</a></li>
-            {% if user.is_authenticated %}
-            <li>
-                <a href="#" style="margin-right: 10px;">(ACCOUNT)</a>
-                <a href="{% url 'main:logout' %}">
-                    <button>
-                        Logout
-                    </button>
-                </a>
-            </li>
-            {% else %}
-            <li>
-                <a href="{% url 'main:login' %}">
-                    <button>
-                        Login
-                    </button>
-                </a>
-            </li>
-            {% endif %}
-
-        </ul>
-    </nav> -->
 
     <div class="rectangle"></div>
     <h2>Book Recommendations</h2>
