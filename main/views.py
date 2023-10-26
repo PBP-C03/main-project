@@ -14,9 +14,18 @@ def show_main(request):
         'books': books,
     }
 
-
     print(request.user.is_authenticated)
     return render(request, "main.html", context)
+
+def show_catalog(request):
+    books = Book.objects.all()
+    context = {
+        'user' : request.user,
+        'books': books,
+        'is_catalog_active': True,
+    }
+
+    return render(request, "catalog.html", context)
 
 def signup(request):
     form = UserCreationForm()
@@ -47,7 +56,4 @@ def login_user(request):
 def logout_user(request):
     logout(request)
     return redirect('main:login')
-
-
-
 

@@ -145,21 +145,20 @@
 </head>
 
 <body style="background-color: #FAF2D3;">
-
-    <nav>
+    {% include 'navbar.html' %} 
+    <!-- <nav>
         <div class="logo-container">
             <img src="https://user-images.githubusercontent.com/122893320/277785554-9500d430-d120-41e2-be26-3c7602b062fb.png" alt="GeTheBooks Logo">
             <a class="logo" href="/">GeTheBooks</a>
         </div>
         <ul>
-            <li><a href="#">Beranda</a></li>
-            <li><a href="#">Tentang Kami</a></li>
-            <li><a href="#">Kontak</a></li>
-            <li><a href="#">(CREATE)</a></li>
+            <li><a href="#">Home</a></li>
+            <li><a href="{% url 'main:show_catalog' %}">Katalog</a></li>
+            <li><a href="#">QnA Forum</a></li>
             <li><a href="#">(CART)</a></li>
-            <li><a href="#">(ACCOUNT)</a></li>
             {% if user.is_authenticated %}
             <li>
+                <a href="#" style="margin-right: 10px;">(ACCOUNT)</a>
                 <a href="{% url 'main:logout' %}">
                     <button>
                         Logout
@@ -177,7 +176,7 @@
             {% endif %}
 
         </ul>
-    </nav>
+    </nav> -->
 
     <div class="rectangle"></div>
     <h2>Book Recommendations</h2>
