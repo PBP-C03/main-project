@@ -21,5 +21,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/books', include("book.urls")),
     path('', include('main.urls')),
-    
+    path('review/', include('reviewbook.urls')),
 ]
