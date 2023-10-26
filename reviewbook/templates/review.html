@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="container mt-5 pt-2 px-5">
+        <div class="book-container flex-row d-flex justify-content-center">
+            <div class="book-image ms-5" style="height: 300px; width: 200px;">
+                <img src={{book.image}} alt="ga ada" class="rounded img-responsive mh-100">
+            </div>
+            <div class="book-details text-left ps-5" style="width: 550px;">
+                <h1>{{book.title}}</h1>
+                <div class="flex-row d-flex">
+                    <h5 class="me-5">{{book.author}}</h5>
+                    {% for review in reviews %}
+                    {% endfor %}
+                    <h5 class="mx-3">4.5 / 5.0 ({{reviews.count}})</h5>
+                </div>
+                <h5 class="me-5">({{book.year}})</h5>
+                <br>
+                <h4 style="color: cornflowerblue;">Rp {{book.price}},00</h4>
+                <br>
+                <button class="rounded-5 p-2 px-3" style="background-color: gold;">Add to Cart</button>
+                <br>
+                Stocks: {{book.stocks}} left
+            </div>
+        </div>
+        <hr class="my-4">
+        <div class="reviews-container">
+            <div class="user-review ms-5 ps-5 pb-4 position-relative">
+                <h1 class="">Your Review:</h1>
+                {% if review %}
+                <h1>Masuk if</h1>
+                {% else %}
+                <div class="" id="user-review">
+                    <div class="position-absolute top-100 start-50 translate-middle">
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#exampleModal" class="rounded-4 p-3" style="background-color: gold; ">Add Rating & Review</button>
+                    </div>
+                    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h1 class="modal-title fs-5" id="exampleModalLabel">Rate & Review</h1>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <form id="form" onsubmit="return false;">
+                                        {% csrf_token %}
+                                        <div class="mb-3">
+                                          <label for="rating" class="col-form-label">Rating:</label>
+                                          <input type="number" class="form-control" id="rating" name="rating" min="0" max="5"></input>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="review" class="col-form-label">Review:</label>
+                                            <textarea class="form-control" id="review" name="review"></textarea>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                    <button type="button" class="btn btn-primary" id="button_add" data-bs-dismiss="modal">Add Review</button>
+                                </div>
+                            </div>
+                        </div>
+                      </div>
+                </div>
+                {% endif %}
+            </div>
+            <hr class="my-5">
+            <div class="reviews">
+
+            </div>
+        </div>
+        
+    </div>
+
+    <script>
+        async function getReviews(bookId) {
+            return fetch(`get-reviews/${bookId}`).then((res) => res.json())
+        }
+
+        async function refreshReviews() {
+
+        }
+
+    </script>
+{% endblock content %}

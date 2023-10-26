@@ -5,19 +5,24 @@ from reviewbook.forms import ReviewForm
 from django.http import HttpResponseNotFound, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
+from django.core import serializers
 
 @login_required(login_url='/login')
 def show_main(request, id):
     book = Book.objects.get(pk = id)
     reviews = Review.objects.filter(book = book)
-    review = Review.objects.get(user=request.user)
-    context: {
+    review = Review.objects.filter(user=request.user, book=book)
+    context = {
         'book': book,
         'reviews': reviews,
         'review': review,
     }
+    return render(request, "review.html", context)
 
-    return render(request, "main.html", context)
+def get_reviews_ajax(request, id):
+    book = Book.objects.get(pk = id)
+    review = Review.objects.filter(user=request.user, book=book)
+    return HttpResponse(serializers.serialize('json', review))
 
 @csrf_exempt
 def add_review_ajax(request):
