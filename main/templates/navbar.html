@@ -7,7 +7,15 @@
         <li><a href="#">Home</a></li>
         <li{% if is_catalog_active %} class="active"{% endif %}><a href="{% url 'main:show_catalog' %}">Katalog</a></li>
         <li><a href="#">QnA Forum</a></li>
-        <li><a href="#">(CART)</a></li>
+        <li>
+            <a href="#">
+                <svg width="35" height="35" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M8 5H24L22 12H10.3767M24 16H10L8 3H5" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                    <circle cx="10.5" cy="23.5" r="2.5" stroke="#000000" stroke-width="2" fill="none"/>
+                    <circle cx="21.5" cy="23.5" r="2.5" stroke="#000000" stroke-width="2" fill="none"/>
+                </svg>          
+            </a>
+        </li>
         {% if user.is_authenticated %}
         <li>
             <a href="#" style="margin-right: 10px;">(ACCOUNT)</a>
