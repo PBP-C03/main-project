@@ -104,4 +104,31 @@
         }
 
     </style>
+</head>
+
+<body style="background-color: #FAF2D3;">
+
+    <div class="rectangle"></div>
+    <h2>Book Recommendations</h2>
+
+    <div class="container">
+        {% for book in books %}
+        <div class="book-card">
+            <div class="book-details">
+                <div class="book-image">
+                    <img src="{{ book.image }}" alt="{{ book.title }}" width="150" height="200">
+                </div>
+                <p>{{ book.author }}</p>
+                <p>{{ book.title }}</p>
+                <div class="harga">
+                    <p>IDR {{ book.price }}</p>
+                </div>
+                <button class="buy-button">Beli</button>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+</body>
+</html>
 {% endblock content %}
