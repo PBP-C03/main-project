@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from book.models import Book
 from main.models import Profile
+from cartbook.models import Cart
 from django.shortcuts import redirect
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages  
@@ -11,6 +12,7 @@ from django.http import HttpResponse,HttpResponseNotFound
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from django.core.serializers import serialize
+
 def show_main(request):
     books = Book.objects.all()
     context = {
@@ -39,7 +41,9 @@ def signup(request):
         if form.is_valid():
             user = form.save()
             profile = Profile(user = user, saldo = 0)
+            cart_user = Cart(user = user,total_amount = 0, total_harga = 0)
             profile.save()
+            cart_user.save()
             messages.success(request, 'Your account has been successfully created!')
             return redirect('main:login')
         
