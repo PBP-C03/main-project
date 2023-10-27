@@ -20,11 +20,19 @@ from django.core.serializers import serialize
 def checkout_cart(request):
     if request.method == 'POST':
         profile = Profile.objects.get(user=request.user)
-        payment = 0
-        if profile.saldo >= payment :
-            profile.saldo -= payment
+        cart = Cart.objects.get(user = request.user)
+
+        if cart.total_price < profile.saldo:
+            profile.saldo -= cart.total_price
             profile.save()
-            nota = Nota(user = profile.user, amount = payment)
+
+            books = CartBook.objects.filter(cart = cart)
+        
+            for item in books.iterator():
+                item.book.amount -= item.amount
+                item.book.save()
+
+            nota = Nota(user = profile.user, amount = cart.total_price)
             nota.save()
             return HttpResponse(b"PAYMENT SUCCEED", status=201)
         else:
@@ -35,7 +43,6 @@ def checkout_cart(request):
 def get_nota_ajax(request):
     if request.method == 'POST':
         nota = Nota.objects.filter(user = request.user)
-
         return HttpResponse(b"SUCCEED", status=201)
 
     return HttpResponseNotFound()
