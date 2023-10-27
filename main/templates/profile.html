@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="addModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="addModalLabel">Tambahkan Saldo</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="form" onsubmit="return false;">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="name" class="col-form-label">Jumlah:</label>
+                        <input type="number" class="form-control" id="jumlah" name="jumlah"></input>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                <button type="button" class="btn btn-primary" id="button_add" data-bs-dismiss="modal">Tambahkan</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class = "main-container">
+    <div class = 'header'>
+        <h2>
+            Nama: {{ profile.user }}
+            <br>
+            <table>
+                <tr>
+                    <td id = "userSaldo">Saldo: {{ profile.saldo }}</td>
+                    <td><a href="" data-bs-toggle="modal" data-bs-target="#addModal">
+                        <button class="btn btn-primary">
+                        Tambahkan saldo
+                        </button>
+                    </a></td>
+                </tr>
+                <tr>
+                    <td><a href="">
+                        <button class="btn btn-primary">
+                        Jual Buku
+                        </button>
+                    </a></td>
+                    <td><a href="">
+                        <button class="btn btn-primary">
+                        Riwayat
+                        </button>
+                    </a></td>
+                </tr>
+            </table>
+        </h2>
+    </div>
+</div>
+
+<script> 
+        async function getProducts() {
+            return fetch("{% url 'main:get_saldo' %}",{method:'GET'}).then((res) => res.json())
+        }
+        async function refreshSaldo() {
+            console.log("Refreshing saldo...");
+            const profile = await getProducts()
+            let htmlString = `Saldo: ${profile[0].fields.saldo}`
+
+            document.getElementById("userSaldo").innerHTML = htmlString
+        }
+        refreshSaldo()
+
+        function addProduct() {
+            fetch("{% url 'main:insert_balance' %}", {
+                method: "POST",
+                body: new FormData(document.querySelector('#form'))
+            }).then(() => {
+                refreshSaldo();
+                document.getElementById("form").reset();
+            });
+
+            return false;
+        }
+        document.getElementById("button_add").onclick = addProduct
+</script>
+{% endblock content %}
