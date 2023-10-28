@@ -23,6 +23,13 @@ def get_order(request):
         return HttpResponse(serialize('json', book_cart))
     return HttpResponseNotFound()
 
+def get_book(request,id):
+    if request.method == 'GET':
+        book = Book.objects.get(pk = id)
+        print(serialize('json', [book]))
+        return HttpResponse(serialize('json', [book]))
+    return HttpResponseNotFound()
+
 def display_order(request):
     cart = Cart.objects.get(user=request.user)
     book_cart = Book_Cart.objects.filter(carts = cart)
@@ -45,7 +52,6 @@ def pay_order(request):
     if request.method == 'POST' and form.is_valid():
         profile = Profile.objects.get(user = request.user)
         cart = Cart.objects.get(user = request.user)
-        print(request.POST)
         alamat = request.POST.get("Alamat")
         metode = request.POST.get("Metode")
         if profile.saldo >= cart.total_harga:
@@ -59,7 +65,6 @@ def pay_order(request):
 
             profile.saldo -= cart.total_harga
             profile.save()
-            print(serialize('json', [nota]))
             cart.delete()
             new_cart = Cart(user = request.user)
             new_cart.save()
@@ -68,3 +73,32 @@ def pay_order(request):
         return HttpResponseBadRequest(b"FAILED")
 
     return HttpResponseNotFound()
+@csrf_exempt
+def inc_book(request,id):
+    if request.method == 'POST':
+        cart = Cart.objects.get(user = request.user)
+        order = Book_Cart.objects.filter(carts = cart)
+        book = order.get(book = id)
+        book.amount+=1
+        book.save()
+        return HttpResponse(b"SUCCESS",status=201)
+    return HttpResponseBadRequest(b"FAILED")
+@csrf_exempt
+def dec_book(request,id):
+    if request.method == 'POST':
+        cart = Cart.objects.get(user = request.user)
+        order = Book_Cart.objects.filter(carts = cart)
+        book = order.get(book = id)
+        book.amount-=1
+        book.save()
+        return HttpResponse(b"SUCCESS",status=201)
+    return HttpResponseBadRequest(b"FAILED")
+@csrf_exempt
+def del_book(request,id):
+    if request.method == 'POST':
+        cart = Cart.objects.get(user = request.user)
+        order = Book_Cart.objects.filter(carts = cart)
+        book = order.get(book = id)
+        book.delete()
+        return HttpResponse(b"SUCCESS",status=201)
+    return HttpResponseBadRequest(b"FAILED")

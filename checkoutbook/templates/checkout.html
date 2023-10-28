@@ -35,18 +35,6 @@
     <div id="item_container" class="p-3">
         <h3 class="table_title">Daftar Pesanan</h3>
         <div id="table_container">
-            {% for book_cart in book_carts %}
-            <div id="row_container">
-                <div id="name_container">
-                    {{ forloop.counter }}. {{ book_cart.book.title }}
-                </div>
-                <div id="addon_container">
-                    <span class="badge bg-light text-dark">
-                        {{ book_cart.amount }}
-                    </span>
-                </div>
-            </div>
-            {% endfor %}
         </div>
     </div>
     <div id="operation_container">
@@ -65,7 +53,7 @@
             </div>
             <div class = "button_wrapper">
                 <a href="" data-bs-toggle="modal" data-bs-target="#notaModal">
-                    <button id="confirm_button" class="btn btn-warning">
+                    <button id="confirm_button" class="btn btn-warning" >
                         Lanjutkan
                     </button>
                 </a>
@@ -144,24 +132,104 @@
         text-align: center;
     }
 
+    .addon_button {
+        text-align: center;
+        background-color: transparent;
+        border-color: transparent;
+    }
+    
+    #del_button {
+        font-weight: bold;
+        color: red;
+    }
+    #inc_button {
+        font-weight: bold;
+        color: green;
+    }
+    #dec_button {
+        font-weight: bold;
+        color: yellow;
+    }
 
 </style>
 <script>
-    
-
-     function confirmOrder() {
-            fetch("{% url 'checkoutbook:pay_order' %}", {
-                method: "POST",
-                body: new FormData(document.querySelector('#notaForm'))
-            }).then()
-
-            document.getElementById("notaForm").reset()
-            document.getElementById("table_container").innerHTML = ""
-            document.getElementById("totalHarga").innerHTML = "Total Buku: 0"
-            document.getElementById("totalBuku").innerHTML = "Total Harga: Rp 0"
-            return false
+        async function getOrder() {
+            return fetch("{% url 'checkoutbook:get_order' %}").then((res) => res.json())
         }
-        document.getElementById("pay_button").onclick = confirmOrder
+        async function getBook(id){
+            const url = `{% url 'checkoutbook:get_book' 0 %}`.replace('0', id);
+            return fetch(url).then((res) => res.json());
+        }
+        async function refreshProducts() {
+        document.getElementById("table_container").innerHTML = ""
+            const products = await getOrder()
+            let htmlString = ''
+            let total_book = 0
+            let total_harga = 0
+            
+            for (let index = 0; index < products.length; index++) {
+                const item = products[index];
+                const book = await getBook(item.fields.book);
+                
+                htmlString += 
+                    `<div id="row_container">
+                        <div id="name_container">
+                            ${index+1}. ${book[0].fields.title}
+                        </div>
+                        <div id="addon_container">
+                            <span class="badge bg-light text-dark">
+                                ${item.fields.amount}
+                            </span>
+                            <span>
+                                    <button id = "inc_button" class = "addon_button" onclick = incBook(${item.fields.book}) >
+                                        +
+                                    </button>
+                                </a>
+                            </span>
+                            <span>
+                                    <button id = "dec_button" class = "addon_button" onclick = decBook(${item.fields.book})>
+                                        -
+                                    </button>
+                                </a>
+                            </span>
+                            <span>
+                                    <button id = "del_button" class = "addon_button" onclick = delBook(${item.fields.book})>
+                                        delete
+                                    </button>
+                                </a>
+                            </span>
+                        </div>
+                    </div>\n`;
+                total_book += item.fields.amount
+                total_harga += book[0].fields.price*item.fields.amount
+            }
+            
+            document.getElementById("table_container").innerHTML = htmlString
+            document.getElementById("totalBuku").innerText = `Total Buku: ${total_book}`;
+            document.getElementById("totalHarga").innerText = `Total Buku: ${total_harga}`;
+        }
+        refreshProducts()
+        function confirmOrder() {
+                fetch("{% url 'checkoutbook:pay_order' %}", {
+                    method: "POST",
+                    body: new FormData(document.querySelector('#notaForm'))
+                }).then(refreshProducts)
+                return false
+            }
+            document.getElementById("pay_button").onclick = confirmOrder
+        
+        function incBook(id){
+            const url = `{% url 'checkoutbook:inc_book' 0 %}`.replace('0', id);
+            return fetch(url,{method:'POST'}).then(refreshProducts);
+        }
+        function decBook(id){
+            const url = `{% url 'checkoutbook:dec_book' 0 %}`.replace('0', id);
+            return fetch(url,{method:'POST'}).then(refreshProducts);
+        }
+        function delBook(id){
+            const url = `{% url 'checkoutbook:del_book' 0 %}`.replace('0', id);
+            return fetch(url,{method:'POST'}).then(refreshProducts);
+        }
         
 </script>
 {% endblock %}
