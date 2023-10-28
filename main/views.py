@@ -18,7 +18,6 @@ def show_main(request):
         'books': books,
     }
 
-    print(request.user.is_authenticated)
     return render(request, "main.html", context)
 
 def show_catalog(request):
