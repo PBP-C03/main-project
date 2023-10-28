@@ -1,6 +1,35 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<!-- Modal for User Detail -->
+<div class="modal fade" id="notaModal" tabindex="-1" aria-labelledby="notaModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="notaModalLabel">Lengkapi data pemesanan</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="notaForm" onsubmit="return false;">
+                    {% csrf_token %}
+                    {% for field in form %}
+                    <div class="mb-3">
+                        <label for="{{ field.label }}" class="col-form-label">{{ field.label }}</label>
+                        <input type="text" class="form-control" id="{{ field.label }}" name="{{ field.label }}"></input>
+                    </div>
+                    {% endfor %}
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kembali</button>
+                <button type="button" class="btn btn-primary" id="pay_button" data-bs-dismiss="modal">Bayar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Object -->
 <div id="main_container" class="p-3">
     <h1>Checkout</h1>
     <div id="item_container" class="p-3">
@@ -23,8 +52,8 @@
     <div id="operation_container">
         <h3 class="table_title">Keterangan</h3>
         <div id="detail_container" class="p-3">
-            <p>Total Amount: {{ cart.total_amount }}</p>
-            <p>Total Harga: IDR {{ cart.total_harga }}</p>
+            <p id = "totalBuku">Total Buku: {{ cart.total_amount }}</p>
+            <p id = "totalHarga">Total Harga: Rp {{ cart.total_harga }}</p>
         </div>
         <div id="button_container">
             <div class = "button_wrapper">
@@ -35,9 +64,9 @@
                 </a>
             </div>
             <div class = "button_wrapper">
-                <a href="" >
-                    <button id = "pay_button" class="btn btn-warning">
-                        Bayar
+                <a href="" data-bs-toggle="modal" data-bs-target="#notaModal">
+                    <button id="confirm_button" class="btn btn-warning">
+                        Lanjutkan
                     </button>
                 </a>
             </div>
@@ -118,20 +147,21 @@
 
 </style>
 <script>
-    function payOrder() {
-        fetch("{% url 'checkoutbook:pay_order' %}", {
-            method: "POST"
-        }).then(response => {
-            if (response.status === 201) {
-                window.location.href = "{% url 'main:account' %}";
-            } else {
-                console.error("Payment failed. Status code: " + response.status);
-            }
-        }).catch(error => {
-            console.error("Error:", error);
-        });
-        }
-        document.getElementById("pay_button").onclick = payOrder
-</script>
+    
 
+     function confirmOrder() {
+            fetch("{% url 'checkoutbook:pay_order' %}", {
+                method: "POST",
+                body: new FormData(document.querySelector('#notaForm'))
+            }).then()
+
+            document.getElementById("notaForm").reset()
+            document.getElementById("table_container").innerHTML = ""
+            document.getElementById("totalHarga").innerHTML = "Total Buku: 0"
+            document.getElementById("totalBuku").innerHTML = "Total Harga: Rp 0"
+            return false
+        }
+        document.getElementById("pay_button").onclick = confirmOrder
+        
+</script>
 {% endblock %}
