@@ -78,14 +78,15 @@ def add_comment(request, question_id):
 
 #     return render(request, 'question_detail.html', context)
 
+
 @login_required
-def delete_comment(request, comment_id):
-    comment = get_object_or_404(Comment, pk=comment_id)
-    if request.user == comment.user:
-        comment.delete()
+def delete_question(request, id):
+    question = get_object_or_404(Question, pk=id)
+    if request.user == question.user:
+        question.delete()
         return JsonResponse({'result': 'Success!'})
     else:
-        return JsonResponse({'result': 'Fail!', 'errors': 'You are not the creator of this comment.'})
+        return JsonResponse({'result': 'Fail!', 'errors': 'You are not the creator of this question.'})
 
 
 def view_question(request, id):
