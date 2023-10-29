@@ -29,7 +29,7 @@ def show_review(request, id):
         'average': average_rating,
         'form': form,
         'editForm': editForm,
-    }
+        }
     except:
         context = {
             'book': book,
