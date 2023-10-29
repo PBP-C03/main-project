@@ -1,0 +1,220 @@
+.rectangle {
+    margin: auto;
+    width: 100%; 
+    height: 51px;
+    top: 0;
+    left: 0;
+    background-color: #ffdc00;
+    border-radius: 30px; 
+    position: relative;
+    font-size: large;
+    font-weight: bold;
+}
+
+.rectangle-label {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.rectangle-label.produk {
+    left: 20px;
+}
+
+.rectangle-label.jumlah {
+    left: 69%;
+    margin-left: 18px;
+}
+
+.rectangle-label.subtotal {
+    right: 13%;
+}
+
+.cart {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 60px;
+    position: relative; 
+
+}
+
+.cart-item {
+    height: 260px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 20px;
+    background-color: #f2f2f2;
+    border-radius: 25px;
+    box-shadow: 2px 7px 25px rgba(0, 0, 0, 0.1);
+}
+
+.cart-image img {
+    width: 150px;
+    margin-left: 20px;
+    height: 200px;
+    border-radius: 20px;
+}
+
+.cart-details {
+    flex: 1;
+}
+.cart-subtotal {
+    width: 120px;
+    text-align: center;
+    margin-right: 30px;
+}
+
+.cart-quantity, .cart-action {
+    width: 120px;
+    text-align: center;
+}
+
+.book-title {
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+.book-author {
+    font-style: italic;
+    font-size: 1rem;
+}
+.book-amount {
+    font-weight: bold;
+    font-size:larger;
+    color: black;
+    padding: 15px 15px;
+
+}
+
+.book-price, .book-subtotal {
+    font-weight: bold;
+    font-size: large;
+    color: dodgerblue;
+}
+
+.cart-summary {
+    border-top: 1px solid #000;
+    padding: 10px 20px; /* Penyesuaian padding */
+    text-align: right;
+}
+
+.cart-summary-item p, .cart-summary-item span {
+    margin-bottom: 10px; /* Jarak antar elemen */
+    font-weight: bold;
+}
+
+.cart-actions {
+    margin-top: 20px;
+    padding: 10px 20px; /* Penyesuaian padding */
+    text-align: right;
+    display: flex;
+    justify-content: space-between;
+}
+
+.cart-actions button {
+    background-color: dodgerblue; 
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    color: white;
+    cursor: pointer;
+    font-size: 1.1rem;
+    transition: background-color 0.3s; 
+}
+
+.cart-actions button:hover {
+    background-color: #0A74DA; /* Warna saat kursor berada di atas tombol */
+}
+
+.quantity-icons {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    margin-right: 100px;
+}
+
+.custom-button {
+    display: flex;
+    align-items: center;
+    background-color: darkgray;
+    color: black;
+    border: none;
+    padding: 8px 18px;
+    border-radius: 30px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+    text-decoration: none;
+    margin-bottom: 15px;
+}
+
+.custom-button:hover {
+    background-color: rgb(102, 97, 97); /* New hover background color */
+}
+
+.custom-button-remove {
+    background-color: red; /* Background warna merah */
+    border: none;
+    border-radius: 20px; /* Membuatnya bulat */
+    padding: 8px 18px;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s;
+    margin-bottom: 15px;
+}
+
+.custom-button-remove:hover {
+    background-color: darkred; /* Warna saat kursor berada di atas tombol */
+}
+
+.add-note-button {
+    background-color: dodgerblue;
+    color: white;
+    border: none;
+    padding: 10px;
+    margin-top: 15px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+.add-note-button:hover {
+    background-color: #0A74DA;
+}
+
+@media screen and (max-width: 768px) {
+    .rectangle-label.jumlah, .rectangle-label.subtotal {
+        display: none; /* Sembunyikan teks pada ukuran layar kecil */
+    }
+
+    .cart-item {
+        flex-direction: column;
+        align-items: flex-start;
+        height: auto; /* Ubah tinggi menjadi otomatis */
+        padding: 10px;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .cart-image img {
+        width: 100px;
+        height: 133px;
+    }
+
+    .cart-quantity, .cart-subtotal, .cart-action {
+        width: 100%; /* Lebar penuh */
+        text-align: left;
+    }
+
+    .quantity-icons {
+        justify-content: flex-start;
+        margin-right: 0;
+    }
+}
+

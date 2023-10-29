@@ -1,267 +1,180 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"> 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profile</title>
-    <style>
-        .container {
-            margin: 0 auto;
-            padding: 30px;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 20px;
-        }
-
-        .book-card {
-            background-color: #f2f2f2;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            align-items: center;
-            border-radius: 50px;
-            box-shadow: 2px 7px 25px rgba(0, 0, 0, 0.1);
-            width: 300px;
-            transition: transform 0.3s ease; 
-        }
-
-        .book-card:hover {
-            transform: scale(1.05); 
-        }
-
-        .book-details {
-            text-align: center;
-            font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-            font-size: large;
-        }
-
-        .book-image {
-            max-width: 500px;
-            background-color: transparent;
-        }
-
-        .book-image img {
-            border-radius: 50px 50px 0 0;
-            height: 400px;
-            object-fit: cover;
-        }
-
-        .rectangle {
-            margin: auto;
-            width: 100%; 
-            height: 51px;
-            top: 0;
-            left: 0;
-            background-color: #ffdc00;
-            border-radius: 30px; 
-            position: relative;
-            font-size: large;
-            font-weight: bold;
-        }
-
-        .rectangle-label {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            left: 50px;
-        }
-
-        .quantity-icons {
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            margin-right: 100px;
-        }
-
-        .product-action {
-            width: 120px;
-            text-align: center;
-        }
-
-        .custom-button-remove {
-            background-color: red; /* Background warna merah */
-            border: none;
-            border-radius: 20px; /* Membuatnya bulat */
-            padding: 8px 18px;
-            color: white;
-            font-weight: bold;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: background-color 0.3s;
-            margin-bottom: 15px;
-        }
-
-        .custom-button-remove:hover {
-            background-color: darkred; /* Warna saat kursor berada di atas tombol */
-        }
-    </style>
-</head>
-<body style="background-color:#FAF2D3;">
-
-    <div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="addModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="addModalLabel">Tambahkan Saldo</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="form" onsubmit="return false;">
-                        {% csrf_token %}
-                        <div class="mb-3">
-                            <label for="name" class="col-form-label">Jumlah:</label>
-                            <input type="number" class="form-control" id="jumlah" name="jumlah"></input>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-                    <button type="button" class="btn btn-primary" id="button_add" data-bs-dismiss="modal">Tambahkan</button>
-                </div>
+<div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="addModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="addModalLabel">Tambahkan Saldo</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-        </div>
-    </div>
-
-    <div class = "main-container">
-        <h2>
-            Hi, {{ profile.user }} !
-            <br>
-            <span id = "userSaldo">Balance: {{ profile.saldo }}</span>
-            <a href="" data-bs-toggle="modal" data-bs-target="#addModal">
-                <button class="btn btn-primary">
-                    Top Up
-                </button>
-            </a>
-            <br>
-            <br>
-            <div class = "container">
-                <div class="rectangle">
-                    <p class="rectangle-label">Your Products</p>
-                </div>
-                <table>
-                    {% for book in books %}
-                    <div class="book-card">
-                        <div class="book-details">
-        
-                            <div class="book-image">
-                                <img src="{{ book.image }}" alt="{{ book.title }}" width="300">
-                            </div>
-                        
-                            <p>{{ book.title }}</p>
-                            <p>IDR {{ book.price }}</p>
-                            <div class="cart-quantity">
-                                <div class="quantity-icons">
-                                    <button title="Kurangi" class="custom-button tambah-kurang" data-book-id="{{ book.id }}" data-action="kurang">
-                                        <i class="fas fa-minus"></i>
-                                    </button>
-                                    <p class="book-stocks" id="book-stocks-{{ book.id }}">{{ book.stocks }}</p>
-                                    <button title="Tambah" class="custom-button tambah-kurang" data-book-id="{{ book.id }}" data-action="tambah">
-                                        <i class="fas fa-plus"></i>
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="warning" style="font-weight: bold;">
-                                <p>{{ book.author }}</p>
-                            </div>
-                            <div class="d-flex">
-                                <a href="{% url 'uploadbook:edit_book' book.id  %}" class="mr-2">
-                                    <button class="btn btn-primary">
-                                        ✎
-                                    </button>
-                                </a>
-                                <div class="product-action">
-                                    <button class="custom-button-remove" data-product-id="{{ book.id }}">🗑️</button>
-                                </div>
-                            </div>                            
-                        </div>
+            <div class="modal-body">
+                <form id="form" onsubmit="return false;">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="name" class="col-form-label">Jumlah:</label>
+                        <input type="number" class="form-control" id="jumlah" name="jumlah"></input>
                     </div>
-                    {% endfor %}
-                </table>
-                <a href="" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                    <button class="btn btn-primary">
-                    Add Product AJAX
-                    </button>
-                </a>
-                <a href="{% url 'uploadbook:add_book' %}">
-                    <button class="btn btn-primary">
-                    Add Product
-                    </button>
-                </a>
-                <a href="">
-                    <button class="btn btn-primary">
-                    History
-                    </button>
-                </a>
+                </form>
             </div>
-        </h2>
-    </div>
-
-    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="exampleModalLabel">Tambahkan Penjualan Buku</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="bookform" onsubmit="return false;">
-                        {% csrf_token %}
-                        <div class="mb-3">
-                            <label for="isbn" class="col-form-label">ISBN:</label>
-                            <input type="text" class="form-control" id="isbn" name="isbn"></input>
-                        </div>
-                        <div class="mb-3">
-                            <label for="title" class="col-form-label">Title:</label>
-                            <input type="text" class="form-control" id="title" name="title"></input>
-                        </div>
-                        <div class="mb-3">
-                            <label for="author" class="col-form-label">Author:</label>
-                            <input type="text" class="form-control" id="author" name="author"></input>
-                        </div>
-                        <div class="mb-3">
-                            <label for="year" class="col-form-label">Year:</label>
-                            <input type="number" class="form-control" id="year" name="year"></input>
-                        </div>
-                        <div class="mb-3">
-                            <label for="publisher" class="col-form-label">Publisher:</label>
-                            <input type="text" class="form-control" id="publisher" name="publisher"></input>
-                        </div>
-                        <div class="mb-3">
-                            <label for="image" class="col-form-label">Image Link:</label>
-                            <input type="text" class="form-control" id="image" name="image"></input>
-                        </div>
-                        <div class="mb-3">
-                            <label for="price" class="col-form-label">Price:</label>
-                            <input type="number" class="form-control" id="price" name="price"></input>
-                        </div>
-                        <div class="mb-3">
-                            <label for="stocks" class="col-form-label">Stocks:</label>
-                            <input type="number" class="form-control" id="stocks" name="stocks"></input>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" id="jual_buku" data-bs-dismiss="modal">Add Product</button>
-                </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                <button type="button" class="btn btn-primary" id="button_add" data-bs-dismiss="modal">Tambahkan</button>
             </div>
         </div>
     </div>
-</body>
-</html>
+</div>
 
+<div id = "main-container" class="p-3" style="background-color:#FAF2D3">
+    <div id = 'header' class="p-3">
+        <div id = "profile-container">
+            <h2>Hi {{ profile.user }}! </h2>
+            <div id = "balance-container">
+                <p id = "userSaldo">Saldo: {{ profile.saldo }} </p>
+                <div class = "button-wrapper">
+                    <a href="" data-bs-toggle="modal" data-bs-target="#addModal">
+                        <button style="background-color: blue; min-width: max-content;">
+                            Top Up
+                        </button>
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+    <div id = "title-container" class = "p-3">
+        <div id = "title-wrapper">
+            <h5 id ="title-value">Riwayat</h5>
+        </div>
+    </div>
+    <div id = "content-container" class = "p-3">
+        <div id = "card-container">
+            <div id = "card-wrapper" class="d-flex"></div>
+        </div>
+    </div>
+    <div id = "footer-container" class>
+        <div id ="button-container">
+            <div class = "button-wrapper">
+                <button class = "action-button">
+                    Tambahkan Buku
+                </button>
+            </div>
+            <div class = "button-wrapper" id="history-button">
+                <button class = "action-button">
+                    Riwayat
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<style>
+    #main-container {
+        height: 100vh;
+        width: 100%;
+    }
+    #profile-container {
+        max-width: 25%;
+    }
+
+    #title-wrapper {
+        border-radius: 25px;
+        border: solid #FFDC00;
+        background-color: #FFDC00;
+        box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+    }
+    #title-value {
+       padding: 10px;
+       display: flex;
+       justify-content: center;
+       align-items: center;
+       font-weight: bold;
+    }
+    #button-container {
+        display: flex;
+        flex-direction: row;
+    }
+
+    #balance-container {
+        display: flex;
+        flex-direction: row;
+    }
+
+    #footer-container {
+        margin: 10px 10px 10px 10px;
+        display: flex;
+        justify-content: center;
+    }
+
+    .action-button {
+        margin: 20px 20px 20px 20px;
+        background-color: red;
+        padding: 20px 20px 20px 20px;
+        min-width: 150px;
+    }
+    .button-wrapper {
+        margin: 0px 10px 10px 10px;
+        
+    }
+    .del-button {
+        margin: 0px 10px 10px 10px;
+        background-color: red;
+    }
+
+    button {
+        padding: px 10px px 10px;
+        border-color: transparent;
+        border-radius: 25px;
+        font-weight: bolder;
+        color: white;
+        box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+        
+    }
+    #card-wrapper {
+        overflow-x: auto;
+        overflow-y: auto;
+        min-width: 100px;
+    }
+
+    .card.product-card {
+        flex: 0 0 auto;
+        width: 100px; /* Set the width of each card */
+        margin: 0 10px; /* Adjust margin as needed */
+    }
+
+    #card-content-container {
+        max-height: 300px;
+        padding: 5px;
+        overflow-y: auto;
+    }
+
+    #desc-container {
+    border-radius: 5px;
+    background-color: whitesmoke;
+}
+    #desc-value {
+        padding: 5px;
+        max-width: calc(100% - 50px);
+    }
+
+</style>
 <script> 
+        async function getHistory(id) {
+            const url = `{% url 'checkoutbook:get_history' 0 %}`.replace('0', id);
+            return fetch(url).then((res) => res.json())
+        }
         async function getProducts() {
             return fetch("{% url 'main:get_saldo' %}",{method:'GET'}).then((res) => res.json())
         }
+        function delNota(id){
+            const url = `{% url 'checkoutbook:del_nota' 0 %}`.replace('0', id);
+            return fetch(url,{method:'POST'}).then(showHistory);
+        }
+
+        async function getDesc(id) {
+            const url = `{% url 'checkoutbook:get_desc' 0 %}`.replace('0', id);
+            return fetch(url).then((res) => res.json());
+        }
+        
         async function refreshSaldo() {
             console.log("Refreshing saldo...");
             const profile = await getProducts()
@@ -270,6 +183,10 @@
             document.getElementById("userSaldo").innerHTML = htmlString
         }
         refreshSaldo()
+
+        async function getNota() {
+            return fetch("{% url 'checkoutbook:get_nota' %}").then((res) => res.json())
+        }
 
         function addProduct() {
             fetch("{% url 'main:insert_balance' %}", {
@@ -284,127 +201,85 @@
         }
         document.getElementById("button_add").onclick = addProduct
 
-        async function getBooks() {
-                return fetch("{% url 'uploadbook:get_books' %}",{method:'GET'}).then((res) => res.json())
+    function showHistory() {
+    const response = fetch("{% url 'checkoutbook:get_nota' %}", {
+        method: "GET",
+    });
+
+    response.then(async (response) => {
+        const data = await response.json();
+        data.sort((a, b) => a.pk - b.pk);
+
+        let htmlString = "";
+
+        for (let index = 0; index < data.length; index++) {
+            const item = data[index];
+            const desc = await getDesc(item.pk);
+            const order = await getHistory(item.pk)
+            let descString = '';
+            let noteString = '';
+            
+            
+            desc.forEach((item, index) => {
+                const title = item.fields.title;
+                descString += `<p>${index + 1}. ${title} </p>`;
+            });
+            
+            order.forEach((item, index) => {
+                const notes = item.fields.notes;
+                if (notes != ""){
+                    noteString += `<p>${index+1}. ${notes}</p>`
+                }
+            });
+            htmlString += `
+                <div class="card col-md-4 product-card ${index === data.length - 1 ? 'last-product' : ''}" style="width: 30%;min-width:250px; max-height: 400px; min-height: 200px;">
+                    <div class="card-header" style = "background-color: #FFDC00;font-weight: bold ">Nota ${index + 1}</div>
+                    <h5 class="card-title text-center">${item.fields.date}</h5>
+                    <div id="card-content-container">
+                        <p>Harga: IDR ${item.fields.total_harga},00</p>
+                        <p>Total Buku: ${item.fields.total_amount}</p>
+                        <p>Buku:</p>
+                        <div id ="desc-container">
+                            <div id ="desc-value">${descString}</div>
+                        </div>
+                        <p>Alamat: ${item.fields.alamat}</p>
+                        <p>Jasa Pengiriman: ${item.fields.layanan}</p>
+            `;
+            if (noteString != ''){
+                htmlString += `
+                <p>Keterangan: </p>
+                        <div id = "notes">${noteString}</div>
+                    </div>
+                    <button type="button" class="del-button" onclick="delNota(${item.pk})">Delete</button>
+                </div>`
+            }else{
+                htmlString += `
+                <p>Keterangan: </p>
+                        <div id = "notes"> </div>
+                    </div>
+                    <button type="button" class="del-button" onclick="delNota(${item.pk})">Delete</button>
+                </div>`
+            }
+
         }
-                
-        async function refreshBooks() {
-            document.getElementById("product_table").innerHTML = "";
-            const books = await getBooks();
-                
-            const container = document.createElement("div");
-            container.className = "container";
-                
-            books.forEach((book) => {
-                const bookCard = document.createElement("div");
-                bookCard.className = "book-card";
-            
-                const bookDetails = document.createElement("div");
-                bookDetails.className = "book-details";
-            
-                const bookImage = document.createElement("div");
-                bookImage.className = "book-image";
-            
-                const image = document.createElement("img");
-                image.src = book.fields.image;
-                image.alt = book.fields.title;
-                image.width = 300;
-            
-                bookImage.appendChild(image);
-            
-                const title = document.createElement("p");
-                title.textContent = book.fields.title;
-            
-                const price = document.createElement("p");
-                price.textContent = `IDR ${book.fields.price}`;
-            
-                const stocks = document.createElement("p");
-                stocks.textContent = `Stock: ${book.fields.stocks}`;
-            
-                const authorDiv = document.createElement("div");
-                authorDiv.className = "warning";
-                authorDiv.style.fontWeight = "bold";
-            
-                const author = document.createElement("p");
-                author.textContent = book.fields.author;
-            
-                authorDiv.appendChild(author);
-            
-                bookDetails.appendChild(bookImage);
-                bookDetails.appendChild(title);
-                bookDetails.appendChild(price);
-                bookDetails.appendChild(stocks);
-                bookDetails.appendChild(authorDiv);
-            
-            bookCard.appendChild(bookDetails);
-            container.appendChild(bookCard);
-        });
-    
-        document.getElementById("product_table").appendChild(container);
+
+        document.getElementById("card-wrapper").innerHTML = htmlString;
+    });
     }
+    showHistory()
 
-        function addBook() {
-            fetch("{% url 'uploadbook:add_book_ajax' %}", {
-                method: "POST",
-                body: new FormData(document.querySelector('#bookform'))
-            })
-            .then(refreshBooks)
+document.getElementById("history-button").onclick = showHistory;
 
-            document.getElementById("bookform").reset()
-            return false
+            document.getElementById("history-button").onclick = showHistory
+
+            function delNota(id){
+            const url = `{% url 'checkoutbook:del_nota' 0 %}`.replace('0', id);
+            return fetch(url,{method:'POST'}).then(showHistory);
         }
-
-        document.getElementById("jual_buku").onclick = addBook
-
-        refreshBooks()
-
-        $(document).ready(function () {
-            $(".custom-button-remove").click(function () {
-                var bookId = $(this).data("product-id");
     
-                $.ajax({
-                    url: '/account/uploadbook/delete-book/' + bookId + '/',
-                    type: 'POST',
-                    data: {
-                        csrfmiddlewaretoken: '{{ csrf_token }}',
-                    },
-                    success: function (response) {
-                        if (response.success) {
-                            // Update the cart item's view (e.g., remove the item from the DOM)
-                            $('#product-' + bookId).remove();
-                        }
-                    },
-                    error: function (error) {
-                        console.log('Error:', error);
-                    }
-                });
-            });
-
-            $(".tambah-kurang").click(function () {
-                var bookId = $(this).data("book-id");
-                var action = $(this).data("action");
-                
-                $.ajax({
-                    url: '/account/uploadbook/' + action + '-stocks/' + bookId + '/',
-                    type: 'POST',
-                    data: {
-                        csrfmiddlewaretoken: '{{ csrf_token }}',
-                    },
-                    success: function (response) {
-                        if (response.success) {
-                            // Update the amount, subtotal and total price in the view
-                            $('#book-stocks-' + bookId).html(response.stocks);
-                            // Remove the item from the cart if it was deleted
-                            if (response.deleted) {
-                                $('#book-' + Id).remove();
-                            }
-                        }
-                    },
-                    error: function (error) {
-                        console.log('Error:', error);
-                    }
-                });
-            });
-        });
+        async function getBook(id){
+            const url = `{% url 'checkoutbook:get_book' 0 %}`.replace('0', id);
+            return fetch(url).then((res) => res.json());
+        }
 </script>
 {% endblock content %}
