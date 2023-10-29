@@ -21,9 +21,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/books', include("book.urls")),
     path('', include('main.urls')),
-<<<<<<< HEAD
     path('cartbook/', include('cartbook.urls')),
-=======
->>>>>>> 4642e5a548e37da44d751325c4bdfa27fd39b267
     
 ]

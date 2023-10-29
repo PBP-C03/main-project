@@ -26,11 +26,7 @@
             <li{% if is_catalog_active %} class="active"{% endif %}><a href="{% url 'main:show_catalog' %}">Katalog</a></li>
             <li><a href="#">QnA Forum</a></li>
             <li>
-<<<<<<< HEAD
                 <a href="{% if user.is_authenticated %}{% url 'cartbook:view_cart' %}{% else %}{% url 'main:login' %}{% endif %}">
-=======
-                <a href="#">
->>>>>>> 4642e5a548e37da44d751325c4bdfa27fd39b267
                     <svg width="35" height="35" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
                         <path d="M8 5H24L22 12H10.3767M24 16H10L8 3H5" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
                         <circle cx="10.5" cy="23.5" r="2.5" stroke="#000000" stroke-width="2" fill="none"/>
@@ -39,7 +35,6 @@
                 </a>
             </li>
             {% if user.is_authenticated %}
-<<<<<<< HEAD
             <li><a href="{% url 'main:account' %}" style="margin-right: 10px;">Hi! {{ user }} </a></li>
             <li class="logout-button">
                 <a href="{% url 'main:logout' %}">
@@ -50,33 +45,13 @@
             <li class="login-button">
                 <a href="{% url 'main:login' %}">
                     <button class="btn-login">Login</button>
-=======
-            <li>
-                <a href="{% url 'main:account' %}" style="margin-right: 10px;">(ACCOUNT)</a>
-                <a href="{% url 'main:logout' %}">
-                    <button>
-                        Logout
-                    </button>
-                </a>
-            </li>
-            {% else %}
-            <li>
-                <a href="{% url 'main:login' %}">
-                    <button>
-                        Login
-                    </button>
->>>>>>> 4642e5a548e37da44d751325c4bdfa27fd39b267
                 </a>
             </li>
             {% endif %}
         </ul>
     </nav>
     <style>
-<<<<<<< HEAD
         nav {
-=======
-                nav {
->>>>>>> 4642e5a548e37da44d751325c4bdfa27fd39b267
             background-color: #FFDC00;
             padding: 20px 20px;
             display: flex;
@@ -85,10 +60,7 @@
             border-radius: 10px;
             box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
             margin: auto;
-<<<<<<< HEAD
             flex-wrap: wrap;
-=======
->>>>>>> 4642e5a548e37da44d751325c4bdfa27fd39b267
         }
 
         .logo-container {
@@ -117,10 +89,7 @@
             margin: 0;
             padding: 0;
             display: flex;
-<<<<<<< HEAD
             flex-wrap: wrap; 
-=======
->>>>>>> 4642e5a548e37da44d751325c4bdfa27fd39b267
         }
 
         li {
@@ -136,11 +105,7 @@
             color: black;
         }
 
-<<<<<<< HEAD
         li:not(.logout-button):not(.login-button):hover {
-=======
-        li:hover {
->>>>>>> 4642e5a548e37da44d751325c4bdfa27fd39b267
             background-color: #9d8e2f;
             color: white;
         }
@@ -149,7 +114,6 @@
             background-color: #9d8e2f;
             color: white;
         }
-<<<<<<< HEAD
 
         .btn-login,
         .btn-logout {
@@ -169,8 +133,6 @@
             transform: scale(1.05);
             color: white;
         }
-=======
->>>>>>> 4642e5a548e37da44d751325c4bdfa27fd39b267
     </style>
     {% block content %}
     {% endblock content %}
