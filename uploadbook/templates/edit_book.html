@@ -7,52 +7,19 @@
             <div class="col-md-6">
                 <div class="card">
                     <div class="card-header">
-                        <h1 class="mb-0">Jual Buku</h1>
+                        <h1 class="mb-0">Edit Product</h1>
                     </div>
                     <div class="card-body">
                         <form method="POST">
                             {% csrf_token %}
                             {{ form.as_p }}
                             <div class="form-group text-center">
-                                <button type="submit" class="btn btn-primary">Add Book</button>
+                                <button type="submit" class="btn btn-primary">Edit Book</button>
                             </div>
                         </form>
                     </div>
                 </div>
-            </div>{% extends 'base.html' %}
-
-            {% block content %}
-            <body style="background-color:#FAF2D3;">
-                <div class="container mt-5">
-                    <div class="row justify-content-center">
-                        <div class="col-md-6">
-                            <div class="card">
-                                <div class="card-header">
-                                    <h1 class="mb-0">Edit Product</h1>
-                                </div>
-                                <div class="card-body">
-                                    <form method="POST">
-                                        {% csrf_token %}
-                                        {{ form.as_p }}
-                                        <div class="form-group text-center">
-                                            <button type="submit" class="btn btn-primary">Edit Book</button>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </body>
-                <style>
-                    /* Custom CSS for label formatting */
-                    label {
-                        font-weight: bold;
-                        margin-bottom: 0.5rem;
-                    }
-                </style>
-            {% endblock content %}
-            
+            </div>
         </div>
     </div>
 </body>
