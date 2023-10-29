@@ -13,4 +13,5 @@ urlpatterns = [
     path('delete_question/<int:id>/', views.delete_question, name='delete_question'),
     path('question/<int:id>/', views.view_question, name='view_question'),
     path('accounts/', include('django.contrib.auth.urls')),
+    # path('question/<int:question_id>/', views.question_detail, name='question_detail'),
 ]
