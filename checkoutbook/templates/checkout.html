@@ -230,12 +230,16 @@
         }
         refreshProducts()
         function confirmOrder() {
-                fetch("{% url 'checkoutbook:pay_order' %}", {
-                    method: "POST",
-                    body: new FormData(document.querySelector('#notaForm'))
-                }).then(refreshProducts)
-                return false
-            }
+            fetch("{% url 'checkoutbook:pay_order' %}", {
+                method: "POST",
+                body: new FormData(document.querySelector('#notaForm'))
+            }).then(response => {
+                if (response.status === 201) {
+                    window.location.href = "{% url 'main:show_main' %}"; 
+                }
+            });
+            return false;
+        }
             document.getElementById("pay_button").onclick = confirmOrder
         
         function incBook(id){

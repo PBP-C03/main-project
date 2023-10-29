@@ -88,13 +88,13 @@ def pay_order(request):
                 order.book.stocks -= order.amount
                 order.nota = nota
                 order.save()
+                order.book.save()
 
             profile.saldo -= cart.total_harga
             profile.save()
             cart.delete()
             new_cart = Cart(user=request.user)
             new_cart.save()
-
             return HttpResponse(b"SUCCESS", status=201)
         return HttpResponseBadRequest(b"FAILED")
 
