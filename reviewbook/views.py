@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.urls import reverse
 from book.models import Book
 from reviewbook.models import Review
-from reviewbook.forms import ReviewForm
+from reviewbook.forms import ReviewForm, EditReviewForm
 from django.http import HttpResponseNotFound, HttpResponse, HttpResponseRedirect
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
@@ -12,6 +12,7 @@ from django.core import serializers
 def show_review(request, id):
     book = Book.objects.get(pk = id)
     reviews = Review.objects.filter(book = book)
+    editForm = EditReviewForm()
     totalRating = 0
     for r in reviews: 
         totalRating += r.rating
@@ -23,6 +24,7 @@ def show_review(request, id):
         'book': book,
         'reviews': reviews,
         'average': average_rating,
+        'editForm': editForm,
     }
     return render(request, "review.html", context)
 
@@ -32,6 +34,11 @@ def get_reviews(request, id):
     review = Review.objects.filter(book=book)
     return HttpResponse(serializers.serialize('json', review))
 
+def get_reviews_rating(request, id, rating):
+    book = Book.objects.get(pk=id)
+    review = Review.objects.filter(book=book, rating=rating)
+    return HttpResponse(serializers.serialize('json', review))
+
 def get_user_review(request, id):
     book = Book.objects.get(pk = id)
     review = Review.objects.filter(user=request.user, book=book)
@@ -39,10 +46,10 @@ def get_user_review(request, id):
 
 def edit_review(request, id, reviewId):
     review = Review.objects.get(pk = reviewId)
-    form = ReviewForm(request.POST or None, instance=review)
+    form = EditReviewForm(request.POST or None, instance=review)
 
     if form.is_valid() and request.method == "POST":
-        form.save()
+        form.save(commit=False)
         return HttpResponseRedirect(reverse("reviewbook:show_review"))
     
     context = {'form': form}
