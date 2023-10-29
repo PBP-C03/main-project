@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from book.models import Book
 from reviewbook.models import Review
 from reviewbook.forms import ReviewForm, EditReviewForm
@@ -48,7 +48,7 @@ def get_user_review(request, id):
     return HttpResponse(serializers.serialize('json', review))
 
 def edit_review(request, id, reviewId):
-    review = Review.objects.get(pk = reviewId)
+    review = get_object_or_404(Review, pk = reviewId)
     if request.method == "POST":
         form = EditReviewForm(request.POST or None, instance=review)
         if form.is_valid():
