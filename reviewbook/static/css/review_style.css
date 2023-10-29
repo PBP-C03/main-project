@@ -1,0 +1,12 @@
+#button_filter {
+    background-color: white;
+}
+
+#button_filter:active {
+    background-color: gold;
+}
+
+.checked {
+    color: orange;
+    font-size: 24px;
+}

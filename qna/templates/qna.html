@@ -1,0 +1,145 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% load static %}
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+<div id="my-data"
+    data-get-question-data-url="{% url 'qna:get_question_data' %}"
+    data-ask-question-url="{% url 'qna:ask_question' %}">
+</div>
+
+<link rel="stylesheet" href="{% static 'css/faq.css' %}">
+
+
+<div class="font-sans container" style="background-color: #FAF2D3;">
+    <div class="w-full md:w-3/5 mx-auto p-8">
+        <div class="flex my-4 font-bold text-xl justify-center">
+            <h3 style="justify-content: center; display: flex;">QnA Forum</h3>
+        </div>
+        <div class="support-button text-center d-flex align-items-center justify-content-center mt-4 mb-2">
+            <p class="mb-0 px-2">Have some question? Share with us!</p>
+        </div>
+
+        <div class="support-button text-center d-flex align-items-center justify-content-center mb-4">
+            <button class="text-center bg-blue-500 hover:bg-blue-700 text-black font-bold mt-2 py-2 px-4 rounded" id="add-question-btn">
+                Add Question
+            </button>
+        </div>
+        <div class="search-container">
+            <input type="text" id="search-bar" class="search-bar" placeholder="Search by Book Title">
+        </div>
+
+
+         <div class="modal fade" id="add-question-modal" tabindex="-1" role="dialog" aria-labelledby="addQuestionModal" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Add Question</h5>
+                        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <form method="post" id="question-form">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label for="title">Question Title:</label>
+                                <input type="text" class="form-control" id="title" name="title" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="book">Book Name:</label>
+                                <select class="form-control" id="book" name="book" required>
+                                    {% for book in books %}
+                                    <option value="{{ book.id }}">{{ book.title }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="content">Content:</label>
+                                <textarea class="form-control" id="content" name="content" required></textarea>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary" form="question-form" data-bs-dismiss="modal">Submit Question</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+        <div id="question-table" class="table-responsive" >
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>User</th>
+                        <th>Question Title</th>
+                        <th>Book Title</th>
+                        <th>Question</th>
+                        <th>Add Comment</th>
+                        <th>Delete</th>
+                    </tr>
+                </thead>
+                <tbody id="question-data">
+                    {% for question in questions %}
+                    <tr>
+                        <td>{{ question.user_name }}</td>
+                        <td>{{ question.question_title }}</td>
+                        <td>{{ question.book_name }}</td>
+                        <td>{{ question.question }}</td>
+                        <td>
+                            <button class="btn btn-primary add-comment-btn" data-toggle="modal" data-target="#add-comment-modal" data-question-id="1">Add Comment</button>
+                        </td>
+                        <td>
+                            <button class="btn btn-danger delete-question-btn" data-question-id="{{ question.id }}" data-user-id="{{ question.user.id }}" data-url="{% url 'qna:delete_question' question.id %}">Delete</button>
+                                {% if request.user == question.user %}
+                                    Delete
+                                {% endif %}
+                            </button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for the form ADD COMMENT -->
+    <div class="modal fade" id="add-comment-modal" tabindex="-1" role="dialog" aria-labelledby="addCommentModal" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Add Comment</h5>
+                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form method="post" id="comment-form">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="content">Comment:</label>
+                            <textarea class="form-control" id="content" name="content" required></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary" form="comment-form" data-bs-dismiss="modal">Submit Comment</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+<script src="{% static 'js/faq.js' %}"></script>
+
+
+{% endblock content %}
