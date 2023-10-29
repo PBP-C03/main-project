@@ -14,33 +14,38 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from django.core.serializers import serialize
 from .forms import NotaForm
+from django.shortcuts import get_object_or_404
 # Create your views here.
-@login_required
+
 def get_desc(request,id):
     if request.method == 'GET':
-        nota = Nota.objects.get(pk = id)
+        nota = get_object_or_404(Nota, pk = id)
         books = []
         order = Book_Cart.objects.filter(nota = nota)
         for item in order:
-            books.append(Book.objects.get(pk = item.pk))
-        print(serialize('json', books))
+            books.append(Book.objects.get(pk = item.book.pk))
         return HttpResponse(serialize('json', books))
     return HttpResponseNotFound() 
-@login_required
+
 def get_order(request):
     if request.method == 'GET':
         cart = Cart.objects.get(user=request.user)
         book_cart = Book_Cart.objects.filter(carts = cart)
         return HttpResponse(serialize('json', book_cart))
     return HttpResponseNotFound()
-@login_required
+
+def get_history(request,id):
+    if request.method == 'GET':
+        book_cart = Book_Cart.objects.filter(nota = id)
+        return HttpResponse(serialize('json', book_cart))
+    return HttpResponseNotFound()
+
 def get_book(request,id):
     if request.method == 'GET':
         book = Book.objects.get(pk = id)
-        print(serialize('json', [book]))
         return HttpResponse(serialize('json', [book]))
     return HttpResponseNotFound()
-@login_required
+
 def display_order(request):
     cart = Cart.objects.get(user=request.user)
     book_cart = Book_Cart.objects.filter(carts = cart)
@@ -51,7 +56,7 @@ def display_order(request):
         'form':form
     }
     return render(request,'checkout.html',context)
-@login_required
+
 def get_nota(request):
     if request.method == 'GET':
         nota = Nota.objects.filter(user=request.user).order_by('pk') 
@@ -66,18 +71,19 @@ def del_nota(request,id):
         nota_del.delete()
         return HttpResponse(b"SUCCESS",status=201)
     return HttpResponseBadRequest(b"FAILED")
+
 @login_required
 def pay_order(request):
     form = NotaForm(request.POST or None)
     if request.method == 'POST' and form.is_valid():
-        profile = Profile.objects.get(user = request.user)
-        cart = Cart.objects.get(user = request.user)
+        profile = get_object_or_404(Profile, user=request.user)
+        cart = get_object_or_404(Cart, user=request.user)
         alamat = request.POST.get("Alamat")
-        metode = request.POST.get("Metode")
+        layanan = request.POST.get("Layanan")
         if profile.saldo >= cart.total_harga:
-            nota = Nota(user = request.user, total_amount = cart.total_amount, total_harga = cart.total_harga, alamat = alamat, metode = metode)
+            nota = Nota(user=request.user, total_amount=cart.total_amount, total_harga=cart.total_harga, alamat=alamat, layanan=layanan)
             nota.save()
-            orders = Book_Cart.objects.filter(carts = cart)
+            orders = Book_Cart.objects.filter(carts=cart)
             for order in orders.iterator():
                 order.book.stocks -= order.amount
                 order.nota = nota
@@ -86,10 +92,10 @@ def pay_order(request):
             profile.saldo -= cart.total_harga
             profile.save()
             cart.delete()
-            new_cart = Cart(user = request.user)
+            new_cart = Cart(user=request.user)
             new_cart.save()
-            
-            return HttpResponse(b"SUCCESS",status=201)
+
+            return HttpResponse(b"SUCCESS", status=201)
         return HttpResponseBadRequest(b"FAILED")
 
     return HttpResponseNotFound()
@@ -98,7 +104,7 @@ def pay_order(request):
 @csrf_exempt
 def inc_book(request,id):
     if request.method == 'POST':
-        cart = Cart.objects.get(user = request.user)
+        cart = get_object_or_404(Cart, user=request.user)
         order = Book_Cart.objects.filter(carts = cart)
         book = order.get(book = id)
         book.amount+=1
@@ -106,15 +112,19 @@ def inc_book(request,id):
         return HttpResponse(b"SUCCESS",status=201)
     return HttpResponseBadRequest(b"FAILED")
 
+
 @login_required
 @csrf_exempt
 def dec_book(request,id):
     if request.method == 'POST':
-        cart = Cart.objects.get(user = request.user)
+        cart = get_object_or_404(Cart, user=request.user)
         order = Book_Cart.objects.filter(carts = cart)
         book = order.get(book = id)
-        book.amount-=1
-        book.save()
+        if book.amount - 1 == 0 :
+            book.delete()
+        else:
+            book.amount-=1
+            book.save()
         return HttpResponse(b"SUCCESS",status=201)
     return HttpResponseBadRequest(b"FAILED")
 
@@ -122,7 +132,7 @@ def dec_book(request,id):
 @csrf_exempt
 def del_book(request,id):
     if request.method == 'POST':
-        cart = Cart.objects.get(user = request.user)
+        cart = get_object_or_404(Cart, user=request.user)
         order = Book_Cart.objects.filter(carts = cart)
         book = order.get(book = id)
         book.delete()

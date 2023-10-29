@@ -4,4 +4,4 @@ from .models import Nota
 class NotaForm(forms.ModelForm):
     class Meta:
         model = Nota
-        fields = ("alamat","metode")
+        fields = ("alamat","layanan")

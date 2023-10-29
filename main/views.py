@@ -12,7 +12,6 @@ from django.http import HttpResponse,HttpResponseNotFound
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from django.core.serializers import serialize
-
 def show_main(request):
     books = Book.objects.all()
     context = {

@@ -9,4 +9,4 @@ class Nota(models.Model):
     total_amount = models.IntegerField()
     total_harga = models.IntegerField()
     alamat = models.CharField(max_length=255,null=True, blank=True)
-    metode = models.CharField(max_length=255,null=True, blank=True)
+    layanan = models.CharField(max_length=255,null=True, blank=True)
