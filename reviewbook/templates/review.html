@@ -1,0 +1,336 @@
+{% extends 'base.html' %}
+
+{% block meta %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+        #button_filter {
+            background-color: white;
+        }
+
+        #button_filter:active {
+            background-color: gold;
+        }
+
+        .checked {
+            color: orange;
+            font-size: 24px;
+        }
+    </style>
+{% endblock meta %}
+
+{% block content %}
+    <div class="container mt-3 pt-2 px-5">
+        <div class="book-container flex-row d-flex justify-content-center">
+            <div class="book-image ms-5" style="height: 300px; width: 200px;">
+                <img src={{book.image}} alt="ga ada" class="rounded img-responsive mh-100">
+            </div>
+            <div class="book-details text-left ps-5" style="width: 550px;">
+                <h1>{{book.title}}</h1>
+                <div class="flex-row d-flex">
+                    <h5 class="me-5">{{book.author}}</h5>
+                    {% if average == 0 %}
+                        <h5 class="mx-2">No ratings yet!</h5>
+                    {% else %}
+                        <span class="fa fa-star checked ms-3" style="color: orange; font-size: 24px;"></span>
+                        <h5 class="mx-2">{{average}} / 5.0 ({{reviews.count}})</h5>
+                    {% endif %}
+                </div>
+                <h5 class="me-5">({{book.year}})</h5>
+                <br>
+                <h4 style="color: cornflowerblue;">Rp {{book.price}},00</h4>
+                <br>
+                <a href="/cartbook/add-to-cart/{{book.pk}}">
+                    <button type="button" class="rounded-5 p-2 px-3" style="background-color: gold;">Add to Cart</button>
+                </a>
+                <br>
+                Stocks: {{book.stocks}} left
+            </div>
+        </div>
+        <hr class="my-4">
+
+        
+        <div class="reviews-container">
+            <div class="">
+                <h2 class="ms-5">Your Review:</h2>
+                <div class="d-flex justify-content-center" id="user-review">
+
+                </div>
+
+                <div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="addModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h1 class="modal-title fs-5" id="addModalLabel">Rate & Review</h1>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form id="form" onsubmit="return false;">
+                                    {% csrf_token %}
+                                    <div class="mb-3">
+                                        <label for="rating" class="col-form-label">Rating:</label>
+                                        {{form.rating}}
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="review" class="col-form-label">Review:</label>
+                                        {{form.review}}
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-primary" id="button_add" data-bs-dismiss="modal">Add Review</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h1 class="modal-title fs-5" id="editModalLabel">Rate & Review</h1>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form method="POST" onsubmit="return false;" id="editForm">
+                                    {% csrf_token %}
+                                    <div class="mb-3">
+                                        <label for="rating" class="col-form-label">Rating:</label>
+                                        {{editForm.rating}}
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="review" class="col-form-label">Review:</label>
+                                        {{editForm.review}}
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-primary" id="button_edit" data-bs-dismiss="modal" data-review-id="{{review.pk|escapejs}}">Edit Review</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <hr class="mt-5 mb-4">
+            <div class="reviews d-flex flex-column justify-content-center">
+                <div class="d-flex justify-content-center mb-2">
+                    Filter by rating:
+                </div>
+                <div class="filter d-flex flex-row justify-content-center">
+                    <button class="filter 1 rounded-3 p-3 mx-3" id="button_filter" onclick="refreshReviews();">
+                        All
+                    </button>
+                    <button class="filter 1 rounded-3 p-3 mx-3" id="button_filter" onclick="refreshRating(1);">
+                        <span class="fa fa-star checked"></span>
+                        1
+                    </button>
+                    <button class="filter 1 rounded-3 p-3 mx-3" id="button_filter" onclick="refreshRating(2);">
+                        <span class="fa fa-star checked"></span>
+                        2
+                    </button>
+                    <button class="filter 1 rounded-3 p-3 mx-3" id="button_filter" onclick="refreshRating(3);">
+                        <span class="fa fa-star checked"></span>
+                        3
+                    </button>
+                    <button class="filter 1 rounded-3 p-3 mx-3" id="button_filter" onclick="refreshRating(4);">
+                        <span class="fa fa-star checked"></span>
+                        4
+                    </button>
+                    <button class="filter 1 rounded-3 p-3 mx-3" id="button_filter" onclick="refreshRating(5);">
+                        <span class="fa fa-star checked"></span>
+                        5
+                    </button>
+                </div>
+                <div id="reviews" class="d-flex flex-column justify-content-center mt-5">
+
+                </div>
+            </div>
+        </div>
+        
+    </div>
+
+    <script>
+        async function getReviews() {
+            return fetch(`get-reviews/`).then((res) => res.json())
+        }
+
+        async function getUserReview() {
+            return fetch(`get-user-review/`).then((res) => res.json())
+        }
+
+        async function getFilteredReview(rating) {
+            return fetch(`get-reviews/${rating}/`).then((res) => res.json()) 
+        }
+
+        async function refreshReviews() {
+            const reviews = await getReviews()
+            document.getElementById("reviews").innerHTML = ""
+            let htmlString = ""
+            if (reviews.length > 0) {
+                reviews.forEach((review) => {
+                    let rating = review.fields.rating
+                    let starsHTML = "";
+                    for (let i = 1; i <= 5; i++) {
+                        if (i <= rating) {
+                            starsHTML += `<span class="fa fa-star checked" style="color: orange; font-size: 24px;"></span>`
+                        } else {
+                            starsHTML += `<span class="fa fa-star" style="color: gray; font-size: 24px;"></span>`
+                        }
+                    }
+
+                    htmlString += `\n
+                    <div class="user-review container" style="width: 900px; height: 180px;">
+                        <div class="card d-flex flex-column p-4">
+                            <div class="review-details d-flex flex-row">
+                                <div class="user d-flex flex-row">
+                                    <span class="fa fa-user me-1 me-3" style="font-size: 36px;"></span>
+                                    <p style="font-size: 20px; width: 250px;">${review.fields.username}</p>
+                                </div>
+                                <div class="rating mx-2" style="width: 400px;">
+                                    ${starsHTML}
+                                </div>
+                                <div class="text-left" style="width: 140px;">
+                                    ${review.fields.date_added}
+                                </div>
+                            </div>
+                            <div class="review text mt-2" style="width: 500px; height: auto;">
+                                ${review.fields.review}
+                            </div>
+                        </div>
+                    </div>`
+                })
+            } else {
+                htmlString = `\n
+                    <div class="m-4" style="font-size: 36px; text-align: center;">No reviews yet!</div>`
+            }
+            document.getElementById("reviews").innerHTML = htmlString
+        }
+
+        async function refreshReview() {
+            const userReview = await getUserReview()
+            const review = userReview[0]
+            document.getElementById("user-review").innerHTML = ""
+            let htmlString = ""
+            if (review !== undefined) {
+                let rating = review.fields.rating
+                let starsHTML = "";
+                for (let i = 1; i <= 5; i++) {
+                    if (i <= rating) {
+                        starsHTML += `<span class="fa fa-star checked" style="color: orange; font-size: 24px;"></span>`
+                    } else {
+                        starsHTML += `<span class="fa fa-star" style="color: gray; font-size: 24px;"></span>`
+                    }
+                }
+                htmlString = `\n
+                <div class="user-review container mt-3" style="width: 900px; height: 180px;">
+                    <div class="card d-flex flex-column p-4">
+                        <div class="review-details d-flex flex-row">
+                            <div class="user d-flex flex-row">
+                                <span class="fa fa-user me-1 me-3" style="font-size: 36px;"></span>
+                                <p style="font-size: 20px; width: 250px;">${review.fields.username}</p>
+                            </div>
+                            <div class="rating mx-2" style="width: 400px;">
+                                ${starsHTML}
+                            </div>
+                            <div class="text-left" style="width: 140px;">
+                                ${review.fields.date_added}
+                            </div>
+                        </div>
+                        <div class="review text mt-2" style="width: 500px; height: auto;">
+                            ${review.fields.review}
+                        </div>
+                    </div>
+                    <div class="buttons d-flex flex-row mt-4 justify-content-center">
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#editModal" class="btn btn-primary me-3">Edit</button>
+                        <button type="button" class="btn btn-danger ms-3" id="button_delete" onclick="deleteReview(${review.pk}); return false;">Delete</button>
+                    </div>
+                </div>`
+            } else {
+                htmlString = `\n
+                    <div class="mt-3">
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#addModal" class="rounded-4 p-3" style="background-color: gold; ">Add Rating & Review</button>
+                    </div>`
+            }
+            document.getElementById("user-review").innerHTML = htmlString
+        }
+
+        refreshReview()
+        refreshReviews()
+
+        async function refreshRating(rating) {
+            const reviews = await getFilteredReview(rating)
+            document.getElementById("reviews").innerHTML = ""
+            let htmlString = ""
+            reviews.forEach((review) => {
+                let rating = review.fields.rating
+                let starsHTML = "";
+                for (let i = 1; i <= 5; i++) {
+                    if (i <= rating) {
+                        starsHTML += `<span class="fa fa-star checked" style="color: orange; font-size: 24px;"></span>`
+                    } else {
+                        starsHTML += `<span class="fa fa-star" style="color: gray; font-size: 24px;"></span>`
+                    }
+                }
+                htmlString += `\n
+                <div class="user-review container" style="width: 900px; height: 180px;">
+                        <div class="card d-flex flex-column p-4">
+                            <div class="review-details d-flex flex-row">
+                                <div class="user d-flex flex-row">
+                                    <span class="fa fa-user me-1 me-3" style="font-size: 36px;"></span>
+                                    <p style="font-size: 20px; width: 250px;">${review.fields.username}</p>
+                                </div>
+                                <div class="rating mx-2" style="width: 400px;">
+                                    ${starsHTML}
+                                </div>
+                                <div class="text-left" style="width: 140px;">
+                                    ${review.fields.date_added}
+                                </div>
+                            </div>
+                            <div class="review text mt-2" style="width: 500px; height: auto;">
+                                ${review.fields.review}
+                            </div>
+                        </div>
+                    </div>`
+            })
+            document.getElementById("reviews").innerHTML = htmlString
+        }
+
+        function addReview() {
+            fetch(`add-review/`, {
+                method: "POST",
+                body: new FormData(document.querySelector('#form'))
+            }).then(refreshReview).then(refreshReviews)
+
+            document.getElementById("form").reset()
+            return false
+        }
+
+        function editReview(id) {
+            const reviewId = parseInt(id)
+            fetch(`edit-review/${reviewId}/`, {
+                method: 'POST',
+                body: new FormData(document.querySelector('#editForm'))
+            }).then(refreshReview).then(refreshReviews)
+
+            document.getElementById("editForm").reset()
+            return false
+        }
+
+        function deleteReview(reviewId) {
+            fetch(`delete-review/${reviewId}/`, {
+                method: 'DELETE'
+            }).then(refreshReview).then(refreshReviews)
+            return false
+        }
+
+        document.getElementById("button_add").onclick = addReview
+        document.getElementById("button_edit").addEventListener("click", function(event) {
+            var context = event.target.getAttribute("data-review-id");
+            editReview(context);
+        })
+        document.getElementById("button_delete").onclick = deleteReview
+        document.getElementById("button_filter").onclick = refreshRating
+    </script>
+{% endblock content %}
