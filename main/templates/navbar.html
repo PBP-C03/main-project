@@ -1,0 +1,30 @@
+<nav>
+    <div class="logo-container">
+        <img src="https://user-images.githubusercontent.com/122893320/277785554-9500d430-d120-41e2-be26-3c7602b062fb.png" alt="GeTheBooks Logo">
+        <a class="logo" href="/">GeTheBooks</a>
+    </div>
+    <ul>
+        <li><a href="#">Home</a></li>
+        <li{% if is_catalog_active %} class="active"{% endif %}><a href="{% url 'main:show_catalog' %}">Katalog</a></li>
+        <li><a href="#">QnA Forum</a></li>
+        <li><a href="#">(CART)</a></li>
+        {% if user.is_authenticated %}
+        <li>
+            <a href="#" style="margin-right: 10px;">(ACCOUNT)</a>
+            <a href="{% url 'main:logout' %}">
+                <button>
+                    Logout
+                </button>
+            </a>
+        </li>
+        {% else %}
+        <li>
+            <a href="{% url 'main:login' %}">
+                <button>
+                    Login
+                </button>
+            </a>
+        </li>
+        {% endif %}
+    </ul>
+</nav>

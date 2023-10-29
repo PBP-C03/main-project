@@ -1,0 +1,233 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"> 
+    <link rel="stylesheet" href="{% static 'css/cart_style.css' %}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+
+<body style="background-color: #FAF2D3;">
+
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Add Notes</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <!-- <div class="modal-body">
+                    <form id="form" onsubmit="return false;">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="note" class="col-form-label">Notes:</label>
+                            <input type="text" class="form-control" id="note" name="note"></input>
+                        </div>
+                    </form>
+                </div> -->
+                <div class="modal-body">
+                    <form id="form" data-book-cart-id="{{ book_cart.id }}" onsubmit="return false;">
+                        {% csrf_token %}
+                        {{ note_form.as_p }} 
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="button_add" data-bs-dismiss="modal">Add Note</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="cart">
+        <h1>
+            <i class="fas fa-shopping-cart"></i>
+            Keranjang
+        </h1>
+
+        <form method="get" id="filterForm" class="mb-3">
+            <div class="input-group">
+                <input type="text" class="form-control" name="search" placeholder="Search by Title">
+                <button type="submit" class="btn btn-primary">Filter</button>
+            </div>
+        </form>
+
+        <div class="rectangle">
+            <p class="rectangle-label produk">Produk</p>
+            <p class="rectangle-label jumlah">Jumlah</p>
+            <p class="rectangle-label subtotal">Subtotal</p>
+        </div>
+
+        {% for book_cart in book_carts %}
+            <div class="cart-item" id="cart-item-{{ book_cart.id }}">
+                <div class="cart-image">
+                    <img src="{{ book_cart.book.image }}" alt="{{ book_cart.book.title }}">
+                </div>
+                <div class="cart-details">
+                    <p class="book-title">{{ book_cart.book.title }}</p>
+                    <p class="book-author">{{ book_cart.book.author }}</p>
+                    <p class="book-price">IDR {{ book_cart.book.price }}</p>
+                    <div id="note-display-{{ book_cart.id }}" style="font-weight: bold;">Notes: {{ book_cart.notes }}</div>
+                    <button type="button" class="btn btn-primary add-note-button" data-bs-toggle="modal" data-bs-target="#exampleModal" data-book-cart-id="{{ book_cart.id }}">Tambahkan Notes</button>
+                </div>
+                <div class="cart-quantity">
+                    <div class="quantity-icons">
+                        <!-- <a href="{% url 'cartbook:kurang_amount' book_cart.id %}" style="text-decoration: none;">
+                            <button title="Kurangi" class="custom-button" data-book-cart-id="{{ book_cart.id }}" data-action="kurang">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                        </a> -->
+                        <button title="Kurangi" class="custom-button tambah-kurang" data-book-cart-id="{{ book_cart.id }}" data-action="kurang">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                        <p class="book-amount" id="book-amount-{{ book_cart.id }}">{{ book_cart.amount }}</p>
+                        <!-- <a href="{% url 'cartbook:tambah_amount' book_cart.id %}", style="text-decoration: none;">
+                            <button title="Tambah" class="custom-button" data-book-cart-id="{{ book_cart.id }}" data-action="tambah">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </a> -->
+                        <button title="Tambah" class="custom-button tambah-kurang" data-book-cart-id="{{ book_cart.id }}" data-action="tambah">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="cart-subtotal">
+                    <p class="book-subtotal" id="book-subtotal-{{ book_cart.id }}">IDR {{ book_cart.subtotal }}</p>
+                </div>
+                <div class="cart-action">
+                    <!-- <form action="{% url 'cartbook:remove_from_cart' book_cart.id %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="custom-button-remove">Remove</button>
+                    </form> -->
+                    <button class="custom-button-remove" data-cart-item-id="{{ book_cart.id }}">Remove</button>
+                </div>                
+            </div>
+        {% endfor %}
+    
+        <div class="cart-summary">
+            <div class="cart-summary-item">
+                <p>Total Harga:</p>
+                <span id="total-harga">IDR {{ total_harga }}</span>
+            </div>
+        </div>
+    
+        <div class="cart-actions">
+            <a href="{% url 'main:show_catalog' %}" style="text-align: left;">
+                <button>
+                    Back
+                </button>
+            </a>
+            <a href="{% url 'checkoutbook:display_order' %}">
+                <button>
+                    Checkout
+                </button>
+            </a>
+
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            $(".custom-button-remove").click(function () {
+                var cartItemId = $(this).data("cart-item-id");
+    
+                $.ajax({
+                    url: '/cartbook/remove-from-cart/' + cartItemId + '/',
+                    type: 'POST',
+                    data: {
+                        csrfmiddlewaretoken: '{{ csrf_token }}',
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            // Update the cart item's view (e.g., remove the item from the DOM)
+                            $('#cart-item-' + cartItemId).remove();
+                            
+                            // Update the total price if needed
+                            $('#total-harga').html('IDR ' + response.total_harga);
+                        }
+                    },
+                    error: function (error) {
+                        console.log('Error:', error);
+                    }
+                });
+            });
+
+            $(".tambah-kurang").click(function () {
+                var bookCartId = $(this).data("book-cart-id");
+                var action = $(this).data("action");
+                
+                $.ajax({
+                    url: '/cartbook/' + action + '-amount/' + bookCartId + '/',
+                    type: 'POST',
+                    data: {
+                        csrfmiddlewaretoken: '{{ csrf_token }}',
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            // Update the amount, subtotal and total price in the view
+                            $('#book-amount-' + bookCartId).html(response.amount);
+                            $('#book-subtotal-' + bookCartId).html('IDR ' + response.subtotal);
+                            $('#total-harga').html('IDR ' + response.total_harga);
+                            // Remove the item from the cart if it was deleted
+                            if (response.deleted) {
+                                $('#cart-item-' + bookCartId).remove();
+                            }
+                        }
+                    },
+                    error: function (error) {
+                        console.log('Error:', error);
+                    }
+                });
+            });
+
+            $('.add-note-button').click(function () {
+                let bookCartId = $(this).data("book-cart-id");
+                $("#button_add").data("book-cart-id", bookCartId);
+            });
+
+            // $("#button_add").click(function () {
+            //     let bookCartId = $(this).data("book-cart-id");
+            //     let noteValue = $('#note').val();  // Ambil nilai note langsung di sini
+
+            //     $.ajax({
+            //         url: `/cartbook/add-note/${bookCartId}/`,
+            //         type: 'POST',
+            //         data: {
+            //             note: noteValue,
+            //             csrfmiddlewaretoken: '{{ csrf_token }}',
+            //         },
+            //         success: function(response) {
+            //             if (response.success) {
+            //                 $(`#note-display-${bookCartId}`).text('Note: ' + response.note);
+            //             }
+            //         },
+            //         error: function(error) {
+            //             console.log('Error:', error);
+            //         }
+            //     });
+            // });
+            
+            $("#button_add").click(function() {
+                var bookCartId = $(this).data("book-cart-id");  // Ganti ini
+                $.ajax({
+                    url: '/cartbook/add-note/' + bookCartId + '/',
+                    type: 'POST',
+                    data: $('#form').serialize(),  
+                    success: function(response) {
+                        if(response.success) {
+                            $('#note-display-' + bookCartId).html("Note: " + response.note);
+                            $('#form')[0].reset();
+                        }
+                    },
+                    error: function(error) {
+                        console.log('Error:', error);
+                    }
+                });
+            });
+        });
+
+    </script>
+    
+</body>
+{% endblock %}

@@ -1,0 +1,285 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="addModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="addModalLabel">Tambahkan Saldo</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="form" onsubmit="return false;">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="name" class="col-form-label">Jumlah:</label>
+                        <input type="number" class="form-control" id="jumlah" name="jumlah"></input>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                <button type="button" class="btn btn-primary" id="button_add" data-bs-dismiss="modal">Tambahkan</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id = "main-container" class="p-3" style="background-color:#FAF2D3">
+    <div id = 'header' class="p-3">
+        <div id = "profile-container">
+            <h2>Hi {{ profile.user }}! </h2>
+            <div id = "balance-container">
+                <p id = "userSaldo">Saldo: {{ profile.saldo }} </p>
+                <div class = "button-wrapper">
+                    <a href="" data-bs-toggle="modal" data-bs-target="#addModal">
+                        <button style="background-color: blue; min-width: max-content;">
+                            Top Up
+                        </button>
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+    <div id = "title-container" class = "p-3">
+        <div id = "title-wrapper">
+            <h5 id ="title-value">Riwayat</h5>
+        </div>
+    </div>
+    <div id = "content-container" class = "p-3">
+        <div id = "card-container">
+            <div id = "card-wrapper" class="d-flex"></div>
+        </div>
+    </div>
+    <div id = "footer-container" class>
+        <div id ="button-container">
+            <div class = "button-wrapper">
+                <button class = "action-button">
+                    Tambahkan Buku
+                </button>
+            </div>
+            <div class = "button-wrapper" id="history-button">
+                <button class = "action-button">
+                    Riwayat
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<style>
+    #main-container {
+        height: 100vh;
+        width: 100%;
+    }
+    #profile-container {
+        max-width: 25%;
+    }
+
+    #title-wrapper {
+        border-radius: 25px;
+        border: solid #FFDC00;
+        background-color: #FFDC00;
+        box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+    }
+    #title-value {
+       padding: 10px;
+       display: flex;
+       justify-content: center;
+       align-items: center;
+       font-weight: bold;
+    }
+    #button-container {
+        display: flex;
+        flex-direction: row;
+    }
+
+    #balance-container {
+        display: flex;
+        flex-direction: row;
+    }
+
+    #footer-container {
+        margin: 10px 10px 10px 10px;
+        display: flex;
+        justify-content: center;
+    }
+
+    .action-button {
+        margin: 20px 20px 20px 20px;
+        background-color: red;
+        padding: 20px 20px 20px 20px;
+        min-width: 150px;
+    }
+    .button-wrapper {
+        margin: 0px 10px 10px 10px;
+        
+    }
+    .del-button {
+        margin: 0px 10px 10px 10px;
+        background-color: red;
+    }
+
+    button {
+        padding: px 10px px 10px;
+        border-color: transparent;
+        border-radius: 25px;
+        font-weight: bolder;
+        color: white;
+        box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+        
+    }
+    #card-wrapper {
+        overflow-x: auto;
+        overflow-y: auto;
+        min-width: 100px;
+    }
+
+    .card.product-card {
+        flex: 0 0 auto;
+        width: 100px; /* Set the width of each card */
+        margin: 0 10px; /* Adjust margin as needed */
+    }
+
+    #card-content-container {
+        max-height: 300px;
+        padding: 5px;
+        overflow-y: auto;
+    }
+
+    #desc-container {
+    border-radius: 5px;
+    background-color: whitesmoke;
+}
+    #desc-value {
+        padding: 5px;
+        max-width: calc(100% - 50px);
+    }
+
+</style>
+<script> 
+        async function getHistory(id) {
+            const url = `{% url 'checkoutbook:get_history' 0 %}`.replace('0', id);
+            return fetch(url).then((res) => res.json())
+        }
+        async function getProducts() {
+            return fetch("{% url 'main:get_saldo' %}",{method:'GET'}).then((res) => res.json())
+        }
+        function delNota(id){
+            const url = `{% url 'checkoutbook:del_nota' 0 %}`.replace('0', id);
+            return fetch(url,{method:'POST'}).then(showHistory);
+        }
+
+        async function getDesc(id) {
+            const url = `{% url 'checkoutbook:get_desc' 0 %}`.replace('0', id);
+            return fetch(url).then((res) => res.json());
+        }
+        
+        async function refreshSaldo() {
+            console.log("Refreshing saldo...");
+            const profile = await getProducts()
+            let htmlString = `Balance: ${profile[0].fields.saldo}`
+
+            document.getElementById("userSaldo").innerHTML = htmlString
+        }
+        refreshSaldo()
+
+        async function getNota() {
+            return fetch("{% url 'checkoutbook:get_nota' %}").then((res) => res.json())
+        }
+
+        function addProduct() {
+            fetch("{% url 'main:insert_balance' %}", {
+                method: "POST",
+                body: new FormData(document.querySelector('#form'))
+            }).then(() => {
+                refreshSaldo();
+                document.getElementById("form").reset();
+            });
+
+            return false;
+        }
+        document.getElementById("button_add").onclick = addProduct
+
+    function showHistory() {
+    const response = fetch("{% url 'checkoutbook:get_nota' %}", {
+        method: "GET",
+    });
+
+    response.then(async (response) => {
+        const data = await response.json();
+        data.sort((a, b) => a.pk - b.pk);
+
+        let htmlString = "";
+
+        for (let index = 0; index < data.length; index++) {
+            const item = data[index];
+            const desc = await getDesc(item.pk);
+            const order = await getHistory(item.pk)
+            let descString = '';
+            let noteString = '';
+            
+            
+            desc.forEach((item, index) => {
+                const title = item.fields.title;
+                descString += `<p>${index + 1}. ${title} </p>`;
+            });
+            
+            order.forEach((item, index) => {
+                const notes = item.fields.notes;
+                if (notes != ""){
+                    noteString += `<p>${index+1}. ${notes}</p>`
+                }
+            });
+            htmlString += `
+                <div class="card col-md-4 product-card ${index === data.length - 1 ? 'last-product' : ''}" style="width: 30%;min-width:250px; max-height: 400px; min-height: 200px;">
+                    <div class="card-header" style = "background-color: #FFDC00;font-weight: bold ">Nota ${index + 1}</div>
+                    <h5 class="card-title text-center">${item.fields.date}</h5>
+                    <div id="card-content-container">
+                        <p>Harga: IDR ${item.fields.total_harga},00</p>
+                        <p>Total Buku: ${item.fields.total_amount}</p>
+                        <p>Buku:</p>
+                        <div id ="desc-container">
+                            <div id ="desc-value">${descString}</div>
+                        </div>
+                        <p>Alamat: ${item.fields.alamat}</p>
+                        <p>Jasa Pengiriman: ${item.fields.layanan}</p>
+            `;
+            if (noteString != ''){
+                htmlString += `
+                <p>Keterangan: </p>
+                        <div id = "notes">${noteString}</div>
+                    </div>
+                    <button type="button" class="del-button" onclick="delNota(${item.pk})">Delete</button>
+                </div>`
+            }else{
+                htmlString += `
+                <p>Keterangan: </p>
+                        <div id = "notes"> </div>
+                    </div>
+                    <button type="button" class="del-button" onclick="delNota(${item.pk})">Delete</button>
+                </div>`
+            }
+
+        }
+
+        document.getElementById("card-wrapper").innerHTML = htmlString;
+    });
+    }
+    showHistory()
+
+document.getElementById("history-button").onclick = showHistory;
+
+            document.getElementById("history-button").onclick = showHistory
+
+            function delNota(id){
+            const url = `{% url 'checkoutbook:del_nota' 0 %}`.replace('0', id);
+            return fetch(url,{method:'POST'}).then(showHistory);
+        }
+    
+        async function getBook(id){
+            const url = `{% url 'checkoutbook:get_book' 0 %}`.replace('0', id);
+            return fetch(url).then((res) => res.json());
+        }
+</script>
+{% endblock content %}

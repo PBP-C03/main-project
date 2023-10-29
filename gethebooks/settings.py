@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'qna',
     'reviewbook',
     'uploadbook',
+    "book",
 ]
 
 MIDDLEWARE = [

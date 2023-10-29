@@ -1,0 +1,51 @@
+{% load static %}
+
+{% block meta %}
+    <title>Register</title>
+{% endblock meta %}
+
+{% block content %}
+<head>
+    <link rel="stylesheet" href="{% static 'css/signup_style.css' %}">
+</head>
+<body>
+    <div class="register-container">
+        <h1>Buat Akun</h1>
+        <form method="POST">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" class="form-control">
+                {% if form.username.errors %}
+                    <p class="error-message">{{ form.username.errors }}</p>
+                {% endif %}
+            </div>
+            <div class="form-group">
+                <label for="password1">Password:</label>
+                <input type="password" id="password1" name="password1" class="form-control">
+                {% if form.password1.errors %}
+                    <p class="error-message">{{ form.password1.errors }}</p>
+                {% endif %}
+            </div>
+            <div class="form-group">
+                <label for="password2">Confirm Password:</label>
+                <input type="password" id="password2" name="password2" class="form-control">
+                {% if form.password2.errors %}
+                    <p class="error-message">{{ form.password2.errors }}</p>
+                {% endif %}
+            </div>
+            <button class="register-btn" type="submit">Register</button>
+        </form>
+    
+        {% if messages %}
+            <ul>
+                {% for message in messages %}
+                    <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    
+        Sudah punya akun? <a href="{% url 'main:login' %}" class="login-link">Login Sekarang</a>
+    </div>
+</body>
+{% endblock content %}
