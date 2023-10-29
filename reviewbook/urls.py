@@ -10,5 +10,5 @@ urlpatterns = [
     path('<int:id>/get-reviews/', get_reviews, name="get_reviews"),
     path('<int:id>/get-reviews/<int:rating>/', get_reviews_rating, name="get_reviews_rating"),
     path('<int:id>/get-user-review/', get_user_review, name="get_user_review"),
-    path('<int:id>/edit-review/<int:reviewId>/', edit_review, name="edit_review")
+    path('<int:id>/edit-review/<int:reviewId>/', edit_review, name="edit_review"),
 ]
