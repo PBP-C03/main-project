@@ -16,7 +16,12 @@ def view_cart(request):
     user_cart, created = Cart.objects.get_or_create(user=request.user)
     book_carts = Book_Cart.objects.filter(carts=user_cart)
 
-
+    # Filter Buku by Title Book di CART
+    search_query = request.GET.get('search', '')
+    if search_query:
+        book_carts = Book_Cart.objects.filter(carts=user_cart, book__title__icontains=search_query)
+    else:
+        book_carts = Book_Cart.objects.filter(carts=user_cart)
     
     total_amount = user_cart.total_amount
     total_harga = 0
