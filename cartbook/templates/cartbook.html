@@ -1,0 +1,451 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"> 
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        .rectangle {
+            margin: auto;
+            width: 100%; 
+            height: 51px;
+            top: 0;
+            left: 0;
+            background-color: #ffdc00;
+            border-radius: 30px; 
+            position: relative;
+            font-size: large;
+            font-weight: bold;
+        }
+
+        .rectangle-label {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .rectangle-label.produk {
+            left: 20px;
+        }
+
+        .rectangle-label.jumlah {
+            left: 69%;
+            margin-left: 18px;
+        }
+
+        .rectangle-label.subtotal {
+            right: 13%;
+        }
+
+        .cart {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            padding: 60px;
+            position: relative; 
+
+        }
+
+        .cart-item {
+            height: 260px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 20px;
+            background-color: #f2f2f2;
+            border-radius: 25px;
+            box-shadow: 2px 7px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .cart-image img {
+            width: 150px;
+            margin-left: 20px;
+            height: 200px;
+            border-radius: 20px;
+        }
+
+        .cart-details {
+            flex: 1;
+        }
+        .cart-subtotal {
+            width: 120px;
+            text-align: center;
+            margin-right: 30px;
+        }
+
+        .cart-quantity, .cart-action {
+            width: 120px;
+            text-align: center;
+        }
+
+        .book-title {
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .book-author {
+            font-style: italic;
+            font-size: 1rem;
+        }
+        .book-amount {
+            font-weight: bold;
+            font-size:larger;
+            color: black;
+            padding: 15px 15px;
+
+        }
+
+        .book-price, .book-subtotal {
+            font-weight: bold;
+            font-size: large;
+            color: dodgerblue;
+        }
+
+        .cart-summary {
+            border-top: 1px solid #000;
+            padding: 10px 20px; /* Penyesuaian padding */
+            text-align: right;
+        }
+
+        .cart-summary-item p, .cart-summary-item span {
+            margin-bottom: 10px; /* Jarak antar elemen */
+            font-weight: bold;
+        }
+
+        .cart-actions {
+            margin-top: 20px;
+            padding: 10px 20px; /* Penyesuaian padding */
+            text-align: right;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .cart-actions button {
+            background-color: dodgerblue; 
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            color: white;
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: background-color 0.3s; 
+        }
+
+        .cart-actions button:hover {
+            background-color: #0A74DA; /* Warna saat kursor berada di atas tombol */
+        }
+        
+        .quantity-icons {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin-right: 100px;
+        }
+
+        .custom-button {
+            display: flex;
+            align-items: center;
+            background-color: darkgray;
+            color: black;
+            border: none;
+            padding: 8px 18px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+            text-decoration: none;
+            margin-bottom: 15px;
+        }
+
+        .custom-button:hover {
+            background-color: rgb(102, 97, 97); /* New hover background color */
+        }
+
+        .custom-button-remove {
+            background-color: red; /* Background warna merah */
+            border: none;
+            border-radius: 20px; /* Membuatnya bulat */
+            padding: 8px 18px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.3s;
+            margin-bottom: 15px;
+        }
+
+        .custom-button-remove:hover {
+            background-color: darkred; /* Warna saat kursor berada di atas tombol */
+        }
+
+        .add-note-button {
+            background-color: dodgerblue;
+            color: white;
+            border: none;
+            padding: 10px;
+            margin-top: 15px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .add-note-button:hover {
+            background-color: #0A74DA;
+        }
+
+        @media screen and (max-width: 768px) {
+            .rectangle-label.jumlah, .rectangle-label.subtotal {
+                display: none; /* Sembunyikan teks pada ukuran layar kecil */
+            }
+
+            .cart-item {
+                flex-direction: column;
+                align-items: flex-start;
+                height: auto; /* Ubah tinggi menjadi otomatis */
+                padding: 10px;
+            }
+        }
+
+        @media screen and (max-width: 768px) {
+            .cart-image img {
+                width: 100px;
+                height: 133px;
+            }
+
+            .cart-quantity, .cart-subtotal, .cart-action {
+                width: 100%; /* Lebar penuh */
+                text-align: left;
+            }
+
+            .quantity-icons {
+                justify-content: flex-start;
+                margin-right: 0;
+            }
+        }
+
+
+    </style>
+</head>
+
+<body style="background-color: #FAF2D3;">
+
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Add Notes</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <!-- <div class="modal-body">
+                    <form id="form" onsubmit="return false;">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="note" class="col-form-label">Notes:</label>
+                            <input type="text" class="form-control" id="note" name="note"></input>
+                        </div>
+                    </form>
+                </div> -->
+                <div class="modal-body">
+                    <form id="form" data-book-cart-id="{{ book_cart.id }}" onsubmit="return false;">
+                        {% csrf_token %}
+                        {{ note_form.as_p }} 
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="button_add" data-bs-dismiss="modal">Add Note</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="cart">
+        <h1>
+            <i class="fas fa-shopping-cart"></i>
+            Keranjang
+        </h1>
+
+        <form method="get" id="filterForm" class="mb-3">
+            <div class="input-group">
+                <input type="text" class="form-control" name="search" placeholder="Search by Title">
+                <button type="submit" class="btn btn-primary">Filter</button>
+            </div>
+        </form>
+
+        <div class="rectangle">
+            <p class="rectangle-label produk">Produk</p>
+            <p class="rectangle-label jumlah">Jumlah</p>
+            <p class="rectangle-label subtotal">Subtotal</p>
+        </div>
+
+        {% for book_cart in book_carts %}
+            <div class="cart-item" id="cart-item-{{ book_cart.id }}">
+                <div class="cart-image">
+                    <img src="{{ book_cart.book.image }}" alt="{{ book_cart.book.title }}">
+                </div>
+                <div class="cart-details">
+                    <p class="book-title">{{ book_cart.book.title }}</p>
+                    <p class="book-author">{{ book_cart.book.author }}</p>
+                    <p class="book-price">IDR {{ book_cart.book.price }}</p>
+                    <div id="note-display-{{ book_cart.id }}" style="font-weight: bold;">Notes: {{ book_cart.notes }}</div>
+                    <button type="button" class="btn btn-primary add-note-button" data-bs-toggle="modal" data-bs-target="#exampleModal" data-book-cart-id="{{ book_cart.id }}">Tambahkan Notes</button>
+                </div>
+                <div class="cart-quantity">
+                    <div class="quantity-icons">
+                        <!-- <a href="{% url 'cartbook:kurang_amount' book_cart.id %}" style="text-decoration: none;">
+                            <button title="Kurangi" class="custom-button" data-book-cart-id="{{ book_cart.id }}" data-action="kurang">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                        </a> -->
+                        <button title="Kurangi" class="custom-button tambah-kurang" data-book-cart-id="{{ book_cart.id }}" data-action="kurang">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                        <p class="book-amount" id="book-amount-{{ book_cart.id }}">{{ book_cart.amount }}</p>
+                        <!-- <a href="{% url 'cartbook:tambah_amount' book_cart.id %}", style="text-decoration: none;">
+                            <button title="Tambah" class="custom-button" data-book-cart-id="{{ book_cart.id }}" data-action="tambah">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </a> -->
+                        <button title="Tambah" class="custom-button tambah-kurang" data-book-cart-id="{{ book_cart.id }}" data-action="tambah">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="cart-subtotal">
+                    <p class="book-subtotal" id="book-subtotal-{{ book_cart.id }}">IDR {{ book_cart.subtotal }}</p>
+                </div>
+                <div class="cart-action">
+                    <!-- <form action="{% url 'cartbook:remove_from_cart' book_cart.id %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="custom-button-remove">Remove</button>
+                    </form> -->
+                    <button class="custom-button-remove" data-cart-item-id="{{ book_cart.id }}">Remove</button>
+                </div>                
+            </div>
+        {% endfor %}
+    
+        <div class="cart-summary">
+            <div class="cart-summary-item">
+                <p>Total Harga:</p>
+                <span id="total-harga">IDR {{ total_harga }}</span>
+            </div>
+        </div>
+    
+        <div class="cart-actions">
+            <a href="{% url 'main:show_catalog' %}" style="text-align: left;">
+                <button>
+                    Back
+                </button>
+            </a>
+            <button>
+                Checkout
+            </button>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            $(".custom-button-remove").click(function () {
+                var cartItemId = $(this).data("cart-item-id");
+    
+                $.ajax({
+                    url: '/cartbook/remove-from-cart/' + cartItemId + '/',
+                    type: 'POST',
+                    data: {
+                        csrfmiddlewaretoken: '{{ csrf_token }}',
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            // Update the cart item's view (e.g., remove the item from the DOM)
+                            $('#cart-item-' + cartItemId).remove();
+                            
+                            // Update the total price if needed
+                            $('#total-harga').html('IDR ' + response.total_harga);
+                        }
+                    },
+                    error: function (error) {
+                        console.log('Error:', error);
+                    }
+                });
+            });
+
+            $(".tambah-kurang").click(function () {
+                var bookCartId = $(this).data("book-cart-id");
+                var action = $(this).data("action");
+                
+                $.ajax({
+                    url: '/cartbook/' + action + '-amount/' + bookCartId + '/',
+                    type: 'POST',
+                    data: {
+                        csrfmiddlewaretoken: '{{ csrf_token }}',
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            // Update the amount, subtotal and total price in the view
+                            $('#book-amount-' + bookCartId).html(response.amount);
+                            $('#book-subtotal-' + bookCartId).html('IDR ' + response.subtotal);
+                            $('#total-harga').html('IDR ' + response.total_harga);
+                            // Remove the item from the cart if it was deleted
+                            if (response.deleted) {
+                                $('#cart-item-' + bookCartId).remove();
+                            }
+                        }
+                    },
+                    error: function (error) {
+                        console.log('Error:', error);
+                    }
+                });
+            });
+
+            $('.add-note-button').click(function () {
+                let bookCartId = $(this).data("book-cart-id");
+                $("#button_add").data("book-cart-id", bookCartId);
+            });
+
+            // $("#button_add").click(function () {
+            //     let bookCartId = $(this).data("book-cart-id");
+            //     let noteValue = $('#note').val();  // Ambil nilai note langsung di sini
+
+            //     $.ajax({
+            //         url: `/cartbook/add-note/${bookCartId}/`,
+            //         type: 'POST',
+            //         data: {
+            //             note: noteValue,
+            //             csrfmiddlewaretoken: '{{ csrf_token }}',
+            //         },
+            //         success: function(response) {
+            //             if (response.success) {
+            //                 $(`#note-display-${bookCartId}`).text('Note: ' + response.note);
+            //             }
+            //         },
+            //         error: function(error) {
+            //             console.log('Error:', error);
+            //         }
+            //     });
+            // });
+            
+            $("#button_add").click(function() {
+                var bookCartId = $(this).data("book-cart-id");  // Ganti ini
+                $.ajax({
+                    url: '/cartbook/add-note/' + bookCartId + '/',
+                    type: 'POST',
+                    data: $('#form').serialize(),  
+                    success: function(response) {
+                        if(response.success) {
+                            $('#note-display-' + bookCartId).html("Note: " + response.note);
+                            $('#form')[0].reset();
+                        }
+                    },
+                    error: function(error) {
+                        console.log('Error:', error);
+                    }
+                });
+            });
+        });
+
+    </script>
+    
+</body>
+{% endblock %}
