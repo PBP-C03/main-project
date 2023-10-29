@@ -36,10 +36,6 @@ def view_cart(request):
     user_cart.total_harga = total_harga  # Update total_harga pada keranjang
     user_cart.save()
 
-    # filter_query = request.GET.get('filter', '')
-    # if filter_query:
-    #     book_carts = book_carts.filter(book__title__icontains=filter_query)
-
     context = {
         'book_carts': book_carts,
         'total_amount': total_amount,
@@ -74,19 +70,6 @@ def add_to_cart(request, book_id):
 
     return redirect('cartbook:view_cart')
 
-
-# @login_required
-# def remove_from_cart(request, book_cart_id):
-#     book_cart = Book_Cart.objects.get(id=book_cart_id)
-#     user_cart = book_cart.carts
-#     user_cart.total_amount -= book_cart.amount
-#     user_cart.total_harga -= (book_cart.book.price * book_cart.amount)
-#     user_cart.save()
-    
-#     book_cart.delete()
-
-#     return redirect('cartbook:view_cart')
-
 @login_required
 def remove_from_cart(request, book_cart_id):
     try:
@@ -100,23 +83,6 @@ def remove_from_cart(request, book_cart_id):
         return JsonResponse({'success': True, 'total_harga': user_cart.total_harga})
     except Book_Cart.DoesNotExist:
         return JsonResponse({'success': False, 'error': 'Item not found'}, status=404)
-    
-# @login_required
-# def tambah_amount(request, book_cart_id):
-#     book_cart = Book_Cart.objects.get(id=book_cart_id)
-#     book_cart.amount += 1
-#     book_cart.save()
-#     return HttpResponseRedirect(reverse('cartbook:view_cart'))
-
-# @login_required
-# def kurang_amount(request, book_cart_id):
-#     book_cart = Book_Cart.objects.get(id=book_cart_id)
-#     if book_cart.amount > 0:
-#         book_cart.amount -= 1
-#         book_cart.save()
-#     if book_cart.amount == 0:
-#         book_cart.delete()
-#     return HttpResponseRedirect(reverse('cartbook:view_cart'))
 
 @login_required
 def tambah_amount(request, book_cart_id):
@@ -144,16 +110,6 @@ def kurang_amount(request, book_cart_id):
         return JsonResponse({'success': True, 'amount': book_cart.amount, 'subtotal': book_cart.subtotal, 'total_harga': user_cart.total_harga, 'deleted': True})
     return JsonResponse({'success': True, 'amount': book_cart.amount, 'subtotal': book_cart.subtotal, 'total_harga': user_cart.total_harga, 'deleted': False})
 
-# @login_required
-# def add_note(request, book_cart_id):
-#     try:
-#         book_cart = Book_Cart.objects.get(id=book_cart_id)
-#         note = request.POST.get('note', '')
-#         book_cart.notes = note
-#         book_cart.save()
-#         return JsonResponse({'success': True, 'note': note})
-#     except Book_Cart.DoesNotExist:
-#         return JsonResponse({'success': False, 'error': 'Item not found'}, status=404)
 
 @login_required
 def add_note(request, book_cart_id):
