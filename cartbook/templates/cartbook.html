@@ -47,7 +47,7 @@
         }
 
         .cart-item {
-            height: 200px;
+            height: 260px;
             display: flex;
             flex-wrap: wrap;
             align-items: center;
@@ -58,9 +58,9 @@
         }
 
         .cart-image img {
-            width: 100px;
+            width: 150px;
             margin-left: 20px;
-            height: 150px;
+            height: 200px;
             border-radius: 20px;
         }
 
@@ -180,6 +180,52 @@
             background-color: darkred; /* Warna saat kursor berada di atas tombol */
         }
 
+        .add-note-button {
+            background-color: dodgerblue;
+            color: white;
+            border: none;
+            padding: 10px;
+            margin-top: 15px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .add-note-button:hover {
+            background-color: #0A74DA;
+        }
+
+        @media screen and (max-width: 768px) {
+            .rectangle-label.jumlah, .rectangle-label.subtotal {
+                display: none; /* Sembunyikan teks pada ukuran layar kecil */
+            }
+
+            .cart-item {
+                flex-direction: column;
+                align-items: flex-start;
+                height: auto; /* Ubah tinggi menjadi otomatis */
+                padding: 10px;
+            }
+        }
+
+        @media screen and (max-width: 768px) {
+            .cart-image img {
+                width: 100px;
+                height: 133px;
+            }
+
+            .cart-quantity, .cart-subtotal, .cart-action {
+                width: 100%; /* Lebar penuh */
+                text-align: left;
+            }
+
+            .quantity-icons {
+                justify-content: flex-start;
+                margin-right: 0;
+            }
+        }
+
+
     </style>
 </head>
 
@@ -192,13 +238,19 @@
                     <h1 class="modal-title fs-5" id="exampleModalLabel">Add Notes</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
+                <!-- <div class="modal-body">
                     <form id="form" onsubmit="return false;">
                         {% csrf_token %}
                         <div class="mb-3">
                             <label for="note" class="col-form-label">Notes:</label>
                             <input type="text" class="form-control" id="note" name="note"></input>
                         </div>
+                    </form>
+                </div> -->
+                <div class="modal-body">
+                    <form id="form" data-book-cart-id="{{ book_cart.id }}" onsubmit="return false;">
+                        {% csrf_token %}
+                        {{ note_form.as_p }} 
                     </form>
                 </div>
                 <div class="modal-footer">
@@ -215,6 +267,13 @@
             Keranjang
         </h1>
 
+        <form method="get" id="filterForm" class="mb-3">
+            <div class="input-group">
+                <input type="text" class="form-control" name="search" placeholder="Search by Title">
+                <button type="submit" class="btn btn-primary">Filter</button>
+            </div>
+        </form>
+
         <div class="rectangle">
             <p class="rectangle-label produk">Produk</p>
             <p class="rectangle-label jumlah">Jumlah</p>
@@ -230,6 +289,8 @@
                     <p class="book-title">{{ book_cart.book.title }}</p>
                     <p class="book-author">{{ book_cart.book.author }}</p>
                     <p class="book-price">IDR {{ book_cart.book.price }}</p>
+                    <div id="note-display-{{ book_cart.id }}" style="font-weight: bold;">Notes: {{ book_cart.notes }}</div>
+                    <button type="button" class="btn btn-primary add-note-button" data-bs-toggle="modal" data-bs-target="#exampleModal" data-book-cart-id="{{ book_cart.id }}">Tambahkan Notes</button>
                 </div>
                 <div class="cart-quantity">
                     <div class="quantity-icons">
@@ -271,10 +332,6 @@
                 <span id="total-harga">IDR {{ total_harga }}</span>
             </div>
         </div>
-
-        <div id="note-display"></div>
-
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">Add Notes</button>
     
         <div class="cart-actions">
             <a href="{% url 'main:show_catalog' %}" style="text-align: left;">
@@ -342,26 +399,51 @@
                 });
             });
 
-            $("#button_add").click(add_note);
+            $('.add-note-button').click(function () {
+                let bookCartId = $(this).data("book-cart-id");
+                $("#button_add").data("book-cart-id", bookCartId);
+            });
+
+            // $("#button_add").click(function () {
+            //     let bookCartId = $(this).data("book-cart-id");
+            //     let noteValue = $('#note').val();  // Ambil nilai note langsung di sini
+
+            //     $.ajax({
+            //         url: `/cartbook/add-note/${bookCartId}/`,
+            //         type: 'POST',
+            //         data: {
+            //             note: noteValue,
+            //             csrfmiddlewaretoken: '{{ csrf_token }}',
+            //         },
+            //         success: function(response) {
+            //             if (response.success) {
+            //                 $(`#note-display-${bookCartId}`).text('Note: ' + response.note);
+            //             }
+            //         },
+            //         error: function(error) {
+            //             console.log('Error:', error);
+            //         }
+            //     });
+            // });
+            
+            $("#button_add").click(function() {
+                var bookCartId = $(this).data("book-cart-id");  // Ganti ini
+                $.ajax({
+                    url: '/cartbook/add-note/' + bookCartId + '/',
+                    type: 'POST',
+                    data: $('#form').serialize(),  
+                    success: function(response) {
+                        if(response.success) {
+                            $('#note-display-' + bookCartId).html("Note: " + response.note);
+                            $('#form')[0].reset();
+                        }
+                    },
+                    error: function(error) {
+                        console.log('Error:', error);
+                    }
+                });
+            });
         });
-
-        function add_note() {
-            let noteValue = document.querySelector('#note').value;
-            let data = new FormData();
-            data.append('note', noteValue);
-
-            fetch("{% url 'cartbook:add_note' %}", {
-                method: "POST",
-                body: data
-            }).then(function(response) {
-                document.querySelector('#note-display').textContent = 'Note: ' + noteValue;
-                refreshProducts();
-            })
-
-            document.getElementById("form").reset();
-            return false;
-        }
-
 
     </script>
     
