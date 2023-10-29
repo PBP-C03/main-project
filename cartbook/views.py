@@ -6,6 +6,7 @@ from book.models import Book
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
+from cartbook.forms import NoteForm
 
 from django.http import JsonResponse
 
@@ -14,6 +15,8 @@ from django.http import JsonResponse
 def view_cart(request):
     user_cart, created = Cart.objects.get_or_create(user=request.user)
     book_carts = Book_Cart.objects.filter(carts=user_cart)
+
+
     
     total_amount = user_cart.total_amount
     total_harga = 0
@@ -28,10 +31,15 @@ def view_cart(request):
     user_cart.total_harga = total_harga  # Update total_harga pada keranjang
     user_cart.save()
 
+    # filter_query = request.GET.get('filter', '')
+    # if filter_query:
+    #     book_carts = book_carts.filter(book__title__icontains=filter_query)
+
     context = {
         'book_carts': book_carts,
         'total_amount': total_amount,
         'total_harga': total_harga,
+        'note_form': NoteForm(),
     }
 
     return render(request, 'cartbook.html', context)
@@ -131,17 +139,30 @@ def kurang_amount(request, book_cart_id):
         return JsonResponse({'success': True, 'amount': book_cart.amount, 'subtotal': book_cart.subtotal, 'total_harga': user_cart.total_harga, 'deleted': True})
     return JsonResponse({'success': True, 'amount': book_cart.amount, 'subtotal': book_cart.subtotal, 'total_harga': user_cart.total_harga, 'deleted': False})
 
-@csrf_exempt
-def add_note(request):
-    if request.method == 'POST':
-        note = request.POST.get("note") 
-        user = request.user
+# @login_required
+# def add_note(request, book_cart_id):
+#     try:
+#         book_cart = Book_Cart.objects.get(id=book_cart_id)
+#         note = request.POST.get('note', '')
+#         book_cart.notes = note
+#         book_cart.save()
+#         return JsonResponse({'success': True, 'note': note})
+#     except Book_Cart.DoesNotExist:
+#         return JsonResponse({'success': False, 'error': 'Item not found'}, status=404)
 
-        new_note = Book_Cart(note=note, user=user)
-        new_note.save()
+@login_required
+def add_note(request, book_cart_id):
+    try:
+        book_cart = Book_Cart.objects.get(id=book_cart_id)
+        form = NoteForm(request.POST, instance=book_cart)
+        if form.is_valid():
+            form.save()
+            return JsonResponse({'success': True, 'note': form.cleaned_data['notes']})
+        else:
+            return JsonResponse({'success': False, 'error': 'Invalid form'}, status=400)
+    except Book_Cart.DoesNotExist:
+        return JsonResponse({'success': False, 'error': 'Item not found'}, status=404)
 
-        return HttpResponse(b"CREATED", status=201)
 
-    return HttpResponseNotFound()
 
 
