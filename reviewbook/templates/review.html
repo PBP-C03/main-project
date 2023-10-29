@@ -28,10 +28,10 @@
                 <h1>{{book.title}}</h1>
                 <div class="flex-row d-flex">
                     <h5 class="me-5">{{book.author}}</h5>
-                    <span class="fa fa-star checked ms-3" style="color: orange; font-size: 24px;"></span>
                     {% if average == 0 %}
                         <h5 class="mx-2">No ratings yet!</h5>
                     {% else %}
+                        <span class="fa fa-star checked ms-3" style="color: orange; font-size: 24px;"></span>
                         <h5 class="mx-2">{{average}} / 5.0 ({{reviews.count}})</h5>
                     {% endif %}
                 </div>
@@ -168,38 +168,43 @@
             const reviews = await getReviews()
             document.getElementById("reviews").innerHTML = ""
             let htmlString = ""
-            reviews.forEach((review) => {
-                let rating = review.fields.rating
-                let starsHTML = "";
-                for (let i = 1; i <= 5; i++) {
-                    if (i <= rating) {
-                        starsHTML += `<span class="fa fa-star checked" style="color: orange; font-size: 24px;"></span>`
-                    } else {
-                        starsHTML += `<span class="fa fa-star" style="color: gray; font-size: 24px;"></span>`
+            if (reviews.length > 0) {
+                reviews.forEach((review) => {
+                    let rating = review.fields.rating
+                    let starsHTML = "";
+                    for (let i = 1; i <= 5; i++) {
+                        if (i <= rating) {
+                            starsHTML += `<span class="fa fa-star checked" style="color: orange; font-size: 24px;"></span>`
+                        } else {
+                            starsHTML += `<span class="fa fa-star" style="color: gray; font-size: 24px;"></span>`
+                        }
                     }
-                }
 
-                htmlString += `\n
-                <div class="user-review container" style="width: 900px; height: 180px;">
-                    <div class="card d-flex flex-column p-4">
-                        <div class="review-details d-flex flex-row">
-                            <div class="user d-flex flex-row">
-                                <span class="fa fa-user me-1 me-3" style="font-size: 36px;"></span>
-                                <p style="font-size: 20px; width: 250px;">${review.fields.username}</p>
+                    htmlString += `\n
+                    <div class="user-review container" style="width: 900px; height: 180px;">
+                        <div class="card d-flex flex-column p-4">
+                            <div class="review-details d-flex flex-row">
+                                <div class="user d-flex flex-row">
+                                    <span class="fa fa-user me-1 me-3" style="font-size: 36px;"></span>
+                                    <p style="font-size: 20px; width: 250px;">${review.fields.username}</p>
+                                </div>
+                                <div class="rating mx-2" style="width: 400px;">
+                                    ${starsHTML}
+                                </div>
+                                <div class="text-left" style="width: 140px;">
+                                    ${review.fields.date_added}
+                                </div>
                             </div>
-                            <div class="rating mx-2" style="width: 400px;">
-                                ${starsHTML}
-                            </div>
-                            <div class="text-left" style="width: 140px;">
-                                ${review.fields.date_added}
+                            <div class="review text mt-2" style="width: 500px; height: auto;">
+                                ${review.fields.review}
                             </div>
                         </div>
-                        <div class="review text mt-2" style="width: 500px; height: auto;">
-                            ${review.fields.review}
-                        </div>
-                    </div>
-                </div>`
-            })
+                    </div>`
+                })
+            } else {
+                htmlString = `\n
+                    <div class="m-4" style="font-size: 36px; text-align: center;">No reviews yet!</div>`
+            }
             document.getElementById("reviews").innerHTML = htmlString
         }
 

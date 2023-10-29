@@ -11,7 +11,6 @@ from django.core import serializers
 def show_review(request, id):
     book = Book.objects.get(pk = id)
     reviews = Review.objects.filter(book = book)
-    review = Review.objects.get(book=book, user=request.user)
     form = ReviewForm()
     editForm = EditReviewForm()
     totalRating = 0
@@ -21,7 +20,9 @@ def show_review(request, id):
         average_rating = totalRating / len(reviews)
     else:
         average_rating = 0
-    context = {
+    try:
+        review = get_object_or_404(Review, book=book, user=request.user)
+        context = {
         'book': book,
         'reviews': reviews,
         'review': review,
@@ -29,6 +30,14 @@ def show_review(request, id):
         'form': form,
         'editForm': editForm,
     }
+    except:
+        context = {
+            'book': book,
+            'reviews': reviews,
+            'average': average_rating,
+            'form': form,
+            'editForm': editForm,
+        }
     return render(request, "review.html", context)
 
 
@@ -54,7 +63,6 @@ def edit_review(request, id, reviewId):
         if form.is_valid():
             review = form.save(commit=False)
             review.save()
-            print(review)
             return HttpResponse(b"UPDATED", status=200)
     else:
         form = EditReviewForm(instance=review)
