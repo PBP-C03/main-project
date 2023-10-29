@@ -1,6 +1,7 @@
 from django.db import models
 from book.models import Book
 from django.contrib.auth.models import User
+from checkoutbook.models import Nota
 
 # Create your models here.
 class Cart (models.Model):
@@ -13,6 +14,7 @@ class Cart (models.Model):
 class Book_Cart (models.Model): # Untuk Setiap Buku
     amount = models.IntegerField(default=1)
     book = models.ForeignKey(Book, on_delete=models.CASCADE) # Banyak Buku bisa diletakkan di 1 CART User
-    carts = models.ForeignKey(Cart, on_delete=models.CASCADE) # Setiap Buku bisa dimiliki oleh banyak CART
+    carts = models.ForeignKey(Cart, on_delete=models.SET_NULL, null= True) # Setiap Buku bisa dimiliki oleh banyak CART
     subtotal = models.IntegerField(default=0)
-    notes = models.TextField(blank=True, null=True)
+    notes = models.TextField(default="",blank=True, null=True)
+    nota = models.ForeignKey(Nota, null= True,blank=True,on_delete= models.CASCADE) #Menghubungkan Buku yang dipesan ke dalam nota
