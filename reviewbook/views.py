@@ -40,22 +40,25 @@ def show_review(request, id):
         }
     return render(request, "review.html", context)
 
-
+@login_required(login_url='/login')
 def get_reviews(request, id):
     book = Book.objects.get(pk = id)
     review = Review.objects.filter(book=book)
     return HttpResponse(serializers.serialize('json', review))
 
+@login_required(login_url='/login')
 def get_reviews_rating(request, id, rating):
     book = Book.objects.get(pk=id)
     review = Review.objects.filter(book=book, rating=rating)
     return HttpResponse(serializers.serialize('json', review))
 
+@login_required(login_url='/login')
 def get_user_review(request, id):
     book = Book.objects.get(pk = id)
     review = Review.objects.filter(user=request.user, book=book)
     return HttpResponse(serializers.serialize('json', review))
 
+@login_required(login_url='/login')
 def edit_review(request, id, reviewId):
     review = get_object_or_404(Review, pk = reviewId)
     if request.method == "POST":
@@ -68,6 +71,7 @@ def edit_review(request, id, reviewId):
         form = EditReviewForm(instance=review)
 
 @csrf_exempt
+@login_required(login_url='/login')
 def add_review(request, id):
     if request.method == 'POST':
         rating = request.POST.get("rating")
@@ -83,6 +87,7 @@ def add_review(request, id):
     return HttpResponseNotFound()
 
 @csrf_exempt
+@login_required(login_url='/login')
 def delete_review(request, id, reviewId):
     if request.method == 'DELETE':
         review = Review.objects.get(pk = reviewId)
