@@ -15,21 +15,32 @@ from django.http import JsonResponse
 from django.core.serializers import serialize
 from .forms import NotaForm
 # Create your views here.
-
+@login_required
+def get_desc(request,id):
+    if request.method == 'GET':
+        nota = Nota.objects.get(pk = id)
+        books = []
+        order = Book_Cart.objects.filter(nota = nota)
+        for item in order:
+            books.append(Book.objects.get(pk = item.pk))
+        print(serialize('json', books))
+        return HttpResponse(serialize('json', books))
+    return HttpResponseNotFound() 
+@login_required
 def get_order(request):
     if request.method == 'GET':
         cart = Cart.objects.get(user=request.user)
         book_cart = Book_Cart.objects.filter(carts = cart)
         return HttpResponse(serialize('json', book_cart))
     return HttpResponseNotFound()
-
+@login_required
 def get_book(request,id):
     if request.method == 'GET':
         book = Book.objects.get(pk = id)
         print(serialize('json', [book]))
         return HttpResponse(serialize('json', [book]))
     return HttpResponseNotFound()
-
+@login_required
 def display_order(request):
     cart = Cart.objects.get(user=request.user)
     book_cart = Book_Cart.objects.filter(carts = cart)
@@ -40,13 +51,22 @@ def display_order(request):
         'form':form
     }
     return render(request,'checkout.html',context)
-
+@login_required
 def get_nota(request):
     if request.method == 'GET':
-        nota = Nota.objects.filter(user=request.user)
+        nota = Nota.objects.filter(user=request.user).order_by('pk') 
         return HttpResponse(serialize('json', nota))
     return HttpResponseNotFound()
 
+@csrf_exempt
+def del_nota(request,id):
+    if request.method == 'POST':
+        nota = Nota.objects.filter(user=request.user)
+        nota_del = nota.get(pk = id)
+        nota_del.delete()
+        return HttpResponse(b"SUCCESS",status=201)
+    return HttpResponseBadRequest(b"FAILED")
+@login_required
 def pay_order(request):
     form = NotaForm(request.POST or None)
     if request.method == 'POST' and form.is_valid():
@@ -73,6 +93,8 @@ def pay_order(request):
         return HttpResponseBadRequest(b"FAILED")
 
     return HttpResponseNotFound()
+
+@login_required
 @csrf_exempt
 def inc_book(request,id):
     if request.method == 'POST':
@@ -83,6 +105,8 @@ def inc_book(request,id):
         book.save()
         return HttpResponse(b"SUCCESS",status=201)
     return HttpResponseBadRequest(b"FAILED")
+
+@login_required
 @csrf_exempt
 def dec_book(request,id):
     if request.method == 'POST':
@@ -93,6 +117,8 @@ def dec_book(request,id):
         book.save()
         return HttpResponse(b"SUCCESS",status=201)
     return HttpResponseBadRequest(b"FAILED")
+
+@login_required
 @csrf_exempt
 def del_book(request,id):
     if request.method == 'POST':
