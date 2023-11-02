@@ -1,6 +1,9 @@
 {% extends 'base.html' %}
-
+{% load static %}
 {% block content %}
+<head>
+    <link rel="stylesheet" href="{% static 'css/checkout_style.css' %}">
+</head>
 <!-- Modal for User Detail -->
 <div class="modal fade" id="notaModal" tabindex="-1" aria-labelledby="notaModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -63,7 +66,7 @@
     </div>
 </div>
 
-<style>
+<!-- <style>
     #row_container {
         display: flex;
         align-items: center;
@@ -152,7 +155,7 @@
         color: blue;
     }
 
-</style>
+</style> -->
 <script>
         document.getElementById("back-modal").addEventListener("click", function() {
             document.querySelector('#notaForm').reset();
