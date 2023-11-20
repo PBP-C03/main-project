@@ -8,6 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.core import serializers
 
 @login_required(login_url='/login')
+@csrf_exempt
 def show_review(request, id):
     book = Book.objects.get(pk = id)
     reviews = Review.objects.filter(book = book)
@@ -40,22 +41,25 @@ def show_review(request, id):
         }
     return render(request, "review.html", context)
 
-
+@csrf_exempt
 def get_reviews(request, id):
     book = Book.objects.get(pk = id)
     review = Review.objects.filter(book=book)
     return HttpResponse(serializers.serialize('json', review))
 
+@csrf_exempt
 def get_reviews_rating(request, id, rating):
     book = Book.objects.get(pk=id)
     review = Review.objects.filter(book=book, rating=rating)
     return HttpResponse(serializers.serialize('json', review))
 
+@csrf_exempt
 def get_user_review(request, id):
     book = Book.objects.get(pk = id)
     review = Review.objects.filter(user=request.user, book=book)
     return HttpResponse(serializers.serialize('json', review))
 
+@csrf_exempt
 def edit_review(request, id, reviewId):
     review = get_object_or_404(Review, pk = reviewId)
     if request.method == "POST":
@@ -67,6 +71,7 @@ def edit_review(request, id, reviewId):
     else:
         form = EditReviewForm(instance=review)
 
+@csrf_exempt
 @csrf_exempt
 def add_review(request, id):
     if request.method == 'POST':

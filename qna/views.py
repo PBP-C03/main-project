@@ -10,6 +10,7 @@ from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
 from django.core.serializers import serialize
 
+@csrf_exempt
 def forum(request):
     questions = Question.objects.all()
     select = Book.objects.all()
@@ -42,13 +43,14 @@ def ask_question(request):
 
 
 @login_required
+@csrf_exempt
 def add_answer(request, question_id):
     if request.method == 'POST':
         content = request.POST.get('content')
         Comment.objects.create(user=request.user, question_id=question_id, content=content)
         return redirect('qna:forum')
     
-
+@csrf_exempt
 def get_question_data(request):
     questions = Question.objects.all()
     data = [{'user_name': question.user.username,'question_title': question.title, 'book_name': question.book.title, 'question': question.content} for question in questions]
@@ -79,6 +81,7 @@ def add_comment(request, question_id):
 #     return render(request, 'question_detail.html', context)
 
 
+@csrf_exempt
 @login_required
 def delete_question(request, id):
     question = get_object_or_404(Question, pk=id)
@@ -88,7 +91,8 @@ def delete_question(request, id):
     else:
         return JsonResponse({'result': 'Fail!', 'errors': 'You are not the creator of this question.'})
 
-
+@csrf_exempt
+@login_required
 def view_question(request, id):
     question = get_object_or_404(Question, pk=id)
     return render(request, 'view_single_question.html', {'question': question})

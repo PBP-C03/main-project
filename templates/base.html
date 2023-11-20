@@ -24,7 +24,7 @@
         <ul>
             <li><a href="/">Home</a></li>
             <li{% if is_catalog_active %} class="active"{% endif %}><a href="{% url 'main:show_catalog' %}">Katalog</a></li>
-            <li><a href="#">QnA Forum</a></li>
+            <li><a href="{% url 'qna:forum'%}">QnA Forum</a></li>
             <li>
                 <a href="{% if user.is_authenticated %}{% url 'cartbook:view_cart' %}{% else %}{% url 'main:login' %}{% endif %}">
                     <svg width="35" height="35" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
