@@ -14,6 +14,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='nota',
             name='date',
-            field=models.DateField(default=datetime.datetime(2023, 10, 29, 17, 55, 49, 420291, tzinfo=datetime.timezone.utc)),
+            field=models.DateField(default=datetime.datetime(2023, 10, 31, 7, 45, 32, 457746, tzinfo=datetime.timezone.utc)),
         ),
     ]
