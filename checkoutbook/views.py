@@ -17,6 +17,8 @@ from .forms import NotaForm
 from django.shortcuts import get_object_or_404
 # Create your views here.
 
+@login_required
+@csrf_exempt
 def get_desc(request,id):
     if request.method == 'GET':
         nota = get_object_or_404(Nota, pk = id)
@@ -27,6 +29,8 @@ def get_desc(request,id):
         return HttpResponse(serialize('json', books))
     return HttpResponseNotFound() 
 
+@login_required
+@csrf_exempt
 def get_order(request):
     if request.method == 'GET':
         cart = Cart.objects.get(user=request.user)
@@ -34,18 +38,24 @@ def get_order(request):
         return HttpResponse(serialize('json', book_cart))
     return HttpResponseNotFound()
 
+@login_required
+@csrf_exempt
 def get_history(request,id):
     if request.method == 'GET':
         book_cart = Book_Cart.objects.filter(nota = id)
         return HttpResponse(serialize('json', book_cart))
     return HttpResponseNotFound()
 
+@login_required
+@csrf_exempt
 def get_book(request,id):
     if request.method == 'GET':
         book = Book.objects.get(pk = id)
         return HttpResponse(serialize('json', [book]))
     return HttpResponseNotFound()
 
+@login_required
+@csrf_exempt
 def display_order(request):
     cart = Cart.objects.get(user=request.user)
     book_cart = Book_Cart.objects.filter(carts = cart)
@@ -57,12 +67,15 @@ def display_order(request):
     }
     return render(request,'checkout.html',context)
 
+@login_required
+@csrf_exempt
 def get_nota(request):
     if request.method == 'GET':
         nota = Nota.objects.filter(user=request.user).order_by('pk') 
         return HttpResponse(serialize('json', nota))
     return HttpResponseNotFound()
 
+@login_required
 @csrf_exempt
 def del_nota(request,id):
     if request.method == 'POST':
@@ -73,6 +86,7 @@ def del_nota(request,id):
     return HttpResponseBadRequest(b"FAILED")
 
 @login_required
+@csrf_exempt
 def pay_order(request):
     form = NotaForm(request.POST or None)
     if request.method == 'POST' and form.is_valid():

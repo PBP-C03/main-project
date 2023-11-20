@@ -1,5 +1,5 @@
 import datetime
-from django.http import HttpResponseNotFound, HttpResponseRedirect, HttpResponse, Http404
+from django.http import HttpResponseBadRequest, HttpResponseNotFound, HttpResponseRedirect, HttpResponse, Http404
 from django.urls import reverse
 from django.shortcuts import get_object_or_404, redirect
 from django.core import serializers
@@ -13,6 +13,7 @@ from django.http import JsonResponse
 
 # Create your views here.
 @login_required(login_url='/login')
+@csrf_exempt
 def add_book(request):
     form = BookForm(request.POST or None)
 
@@ -25,6 +26,8 @@ def add_book(request):
     context = {'form': form}
     return render(request, "add_book.html", context)
 
+@login_required
+@csrf_exempt
 def edit_book(request, id):
     item = UploadBook.objects.get(pk = id)
     form = BookForm(request.POST or None, instance=item)
@@ -34,42 +37,42 @@ def edit_book(request, id):
         return HttpResponseRedirect(reverse('main:account'))
 
     context = {'form': form}
-    return render(request, "edit_item.html", context)
-
-@login_required
-def delete_book(request, book_id):
-    try:
-        book = UploadBook.objects.get(id=book_id)
-        book.delete()
-
-        return JsonResponse({'success': True})
-    except UploadBook.DoesNotExist:
-        return JsonResponse({'success': False, 'error': 'Item not found'}, status=404)
-
-@login_required
-def tambah_stocks(request, book_id):
-    book = UploadBook.objects.get(id=book_id)
-    book.stocks += 1
-    book.save()
-    return JsonResponse({'success': True, 'stocks': book.stocks})
-
-@login_required
-def kurang_stocks(request, book_id):
-    book = UploadBook.objects.get(id=book_id)
-    if book.stocks > 0:
-        book.stocks -= 1
-        book.save()
-    if book.stocks == 0:
-        book.delete()
-        return JsonResponse({'success': True, 'stocks': book.stocks})
-    return JsonResponse({'success': True, 'stocks': book.stocks})
+    return render(request, "edit_book.html", context)
 
 @csrf_exempt
-def delete_book_ajax(request, id):
-    if request.method == 'DELETE':
-        book = UploadBook.objects.get(pk=id, user=request.user)
-        book.delete()
+def delete_book(request, id):
+    # Dapatkan data buku berdasarkan ID
+    book = UploadBook.objects.get(pk=id)
     
+    if request.method == "POST":
+        # Hapus data buku dari database
+        book.delete()
+        return HttpResponseRedirect(reverse('main:account'))
+    
+    return render(request, "confirmation_template.html", {'book': book})
+
+@login_required
+@csrf_exempt
+def tambah_stocks(request, book_id):
+    data = get_object_or_404(Book, pk=id)
+    
+    data.stocks += 1
+    data.save()
+    
+    return HttpResponseRedirect(reverse('main:account'))
+
+@login_required
+@csrf_exempt
+def kurang_stocks(request, book_id):
+    data = get_object_or_404(Book, pk=id)
+    
+    if data.stock > 0:
+        data.stock -= 1
+        data.save()
+    
+    return HttpResponseRedirect(reverse('main:account'))
+    
+@csrf_exempt
 def get_book_json(request):
     product_item = UploadBook.objects.filter(user=request.user)
     return HttpResponse(serializers.serialize('json', product_item))
@@ -87,7 +90,7 @@ def add_book_ajax(request):
         stocks = request.POST.get("stocks")
         user = request.user
 
-        new_book = Book(isbn=isbn, title=title, author=author, year=year, publisher=publisher, image=image, price=price, stocks=stocks, user=user)
+        new_book = Book(isbn=isbn, title=title, author=author, year=year, publisher=publisher, image=image, price=price, stocks=stocks)
         new_book.save()
         upload_book = UploadBook(isbn=isbn, title=title, author=author, year=year, publisher=publisher, image=image, price=price, stocks=stocks, user=user)
         upload_book.save()
@@ -96,17 +99,14 @@ def add_book_ajax(request):
 
     return HttpResponseNotFound()
 
-def get_books(request):
-    product_item = UploadBook.objects.filter(user=request.user)
-    return HttpResponse(serializers.serialize('json', product_item))
+@csrf_exempt
+def delete_book_ajax(request, id):
+    if request.method == 'POST':
+        try:
+            data = UploadBook.objects.get(id=id)
+            data.delete()
+            return HttpResponse("OK", status=200)
+        except Book.DoesNotExist:
+            return HttpResponse("Buku tidak ada", status=404)
 
-def edit(request, book_id):
-    book = get_object_or_404(UploadBook, pk = book_id)
-    if request.method == "POST":
-        form = BookForm(request.POST or None, instance=book)
-        if form.is_valid():
-            book = form.save(commit=False)
-            book.save()
-            return HttpResponse(b"UPDATED", status=200)
-    else:
-        form = BookForm(instance=book)
+    return HttpResponseNotFound()

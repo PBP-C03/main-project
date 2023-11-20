@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<head>
+    <link rel="stylesheet" href="{% static 'css/main_style.css' %}">
+</head>
+
+<body style="background-color: #FAF2D3;">
+    <div class="box">
+        <div class="group">
+            <div class="overlap-group">
+                <p class="yuk-tingkatkan">
+                    <span class="text-wrapper">Yuk Tingkatkan Budaya <br />Membaca Anak Bangsa <br />Bersama</span>
+                    <span class="span">&nbsp;</span>
+                    <span class="text-wrapper-2">GeThe</span>
+                    <span class="text-wrapper-3">Books</span>
+                </p>
+                <img class="young-woman-has-an" src="{% static 'img/young-woman-has-an-idea.png' %}" />
+                <img class="boy-sitting-on-knees" src="{% static 'img/boy-sitting-on-knees-and-reading-book.png' %}" />
+                <img class="boy-reading-a-book" src="{% static 'img/boy-reading-a-book.png' %}" />
+                <img class="searching-for-idea" src="{% static 'img/searching-for-idea.png' %}" />
+
+            </div>
+        </div>
+    </div>
+
+    <h2>Book Recommendations</h2>
+
+    <div class="container">
+        {% for book in books|slice:":15" %}
+        <div class="book-card">
+            <div class="book-details">
+                <div class="book-image">
+                    <img src="{{ book.image }}" alt="{{ book.title }}" width="150" height="200">
+                </div>
+                <p>{{ book.author }}</p>
+                <p>{{ book.title }}</p>
+                <div class="harga">
+                    <p>IDR {{ book.price }}</p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+</body>
+</html>
+{% endblock content %}
