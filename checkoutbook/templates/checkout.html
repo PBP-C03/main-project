@@ -1,0 +1,172 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<head>
+    <link rel="stylesheet" href="{% static 'css/checkout_style.css' %}">
+</head>
+<!-- Modal for User Detail -->
+<div class="modal fade" id="notaModal" tabindex="-1" aria-labelledby="notaModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="notaModalLabel">Lengkapi data pemesanan</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="notaForm" onsubmit="return false;">
+                    {% csrf_token %}
+                    {% for field in form %}
+                    <div class="mb-3">
+                        <label for="{{ field.label }}" class="col-form-label">{{ field.label }}</label>
+                        <input type="text" class="form-control" id="{{ field.label }}" name="{{ field.label }}"></input>
+                    </div>
+                    {% endfor %}
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id = "back-modal" data-bs-dismiss="modal">Kembali</button>
+                <button type="button" class="btn btn-primary" id="pay_button" data-bs-dismiss="modal">Bayar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Object -->
+<div id="main_container" class="p-3">
+    <h1>Checkout</h1>
+    <div id="item_container" class="p-3">
+        <h3 class="table_title">Daftar Pesanan</h3>
+        <div id="table_container">
+        </div>
+    </div>
+    <div id="operation_container">
+        <h3 class="table_title">Keterangan</h3>
+        <div id="detail_container" class="p-3">
+            <p id = "totalBuku">Total Buku: {{ cart.total_amount }}</p>
+            <p id = "totalHarga">Total Harga: IDR {{ cart.total_harga }}</p>
+        </div>
+        <div id="button_container">
+            <div class = "button_wrapper">
+                <a href="{% url 'cartbook:view_cart' %}">
+                    <button id = "back_button" class="btn btn-secondary">
+                        Kembali
+                    </button>
+                </a>
+            </div>
+            <div class = "button_wrapper">
+                <a id = "ref-modal" href="" data-bs-toggle="modal" data-bs-target="#notaModal">
+                    <button id="confirm_button" class="btn btn-warning" >
+                        Lanjutkan
+                    </button>
+                </a>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+        document.getElementById("back-modal").addEventListener("click", function() {
+            document.querySelector('#notaForm').reset();
+        });
+        async function getOrder() {
+            return fetch("{% url 'checkoutbook:get_order' %}").then((res) => res.json())
+        }
+        async function getBook(id){
+            const url = `{% url 'checkoutbook:get_book' 0 %}`.replace('0', id);
+            return fetch(url).then((res) => res.json());
+        }
+        async function refreshProducts() {
+        document.getElementById("table_container").innerHTML = ""
+            const products = await getOrder()
+            let htmlString = ''
+            let total_book = 0
+            let total_harga = 0
+            
+            for (let index = 0; index < products.length; index++) {
+                const item = products[index];
+                const book = await getBook(item.fields.book);
+                
+                htmlString += 
+                    `<div id="row_container">
+                        <div id="name_container">
+                            ${index+1}. ${book[0].fields.title}
+                        </div>
+                        <div id="addon_container">
+                            <span>
+                                    <button id = "dec_button" class = "addon_button" onclick = decBook(${item.fields.book})>
+                                        -
+                                    </button>
+                                </a>
+                            </span>
+                            <span class="badge bg-light text-dark">
+                                ${item.fields.amount}
+                            </span>
+                            <span>
+                                    <button id = "inc_button" class = "addon_button" onclick = incBook(${item.fields.book}) >
+                                        +
+                                    </button>
+                                </a>
+                            </span>
+                            <span>
+                                    <button id = "del_button" class = "addon_button" onclick = delBook(${item.fields.book})>
+                                        delete
+                                    </button>
+                                </a>
+                            </span>
+                        </div>
+                    </div>\n`;
+                total_book += item.fields.amount
+                total_harga += book[0].fields.price*item.fields.amount
+            }
+            
+
+            if (total_book == 0) {
+                const refModal = document.getElementById('ref-modal');
+                refModal.classList.add('disabled');
+                refModal.removeAttribute('data-bs-toggle');
+                refModal.removeAttribute('data-bs-target');
+
+                document.getElementById('confirm_button').disabled = true;
+            } else {
+                const refModal = document.getElementById('ref-modal');
+                refModal.classList.remove('disabled');
+                refModal.setAttribute('data-bs-toggle', 'modal');
+                refModal.setAttribute('data-bs-target', '#notaModal');
+
+                document.getElementById('confirm_button').disabled = false;
+            }
+            document.getElementById("table_container").innerHTML = htmlString
+            document.getElementById("totalBuku").innerText = `Total Buku: ${total_book}`;
+            document.getElementById("totalHarga").innerText = `Total Harga: IDR ${total_harga},00`;
+        }
+        refreshProducts()
+        function confirmOrder() {
+            fetch("{% url 'checkoutbook:pay_order' %}", {
+                method: "POST",
+                body: new FormData(document.querySelector('#notaForm'))
+            }).then(response => {
+                if (response.status === 201) {
+                    window.location.href = "{% url 'main:show_main' %}"; 
+                }
+            });
+            return false;
+        }
+            document.getElementById("pay_button").onclick = confirmOrder
+        
+        function incBook(id){
+            const url = `{% url 'checkoutbook:inc_book' 0 %}`.replace('0', id);
+            return fetch(url,{method:'POST'}).then(refreshProducts);
+        }
+        function decBook(id){
+            const url = `{% url 'checkoutbook:dec_book' 0 %}`.replace('0', id);
+            return fetch(url,{method:'POST'}).then(refreshProducts);
+        }
+        function delBook(id){
+            const url = `{% url 'checkoutbook:del_book' 0 %}`.replace('0', id);
+            return fetch(url,{method:'POST'}).then(refreshProducts);
+        }
+        
+</script>
+{% endblock %}

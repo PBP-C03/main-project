@@ -55,22 +55,24 @@
 
     <div class="container">
         {% for book in books %}
-        <div class="book-card">
-            <div class="book-details">
+        <a href="/book/{{book.pk}}/" style="text-decoration: none; color: black;">
+            <div class="book-card">
+                <div class="book-details">
 
-                <div class="book-image">
-                    <img src="{{ book.image }}" alt="{{ book.title }}" width="300">
+                    <div class="book-image">
+                        <img src="{{ book.image }}" alt="{{ book.title }}" width="300">
+                    </div>
+
+                    <p>{{ book.title }}</p>
+                    <p>IDR {{ book.price }}</p>
+                    <p>Stock: {{ book.stocks }}</p>
+                    <div class="warning" style="font-weight: bold;">
+                        <p>{{ book.author }}</p>
+                    </div>
+
                 </div>
-
-                <p>{{ book.title }}</p>
-                <p>IDR {{ book.price }}</p>
-                <p>Stock: {{ book.stocks }}</p>
-                <div class="warning" style="font-weight: bold;">
-                    <p>{{ book.author }}</p>
-                </div>
-
             </div>
-        </div>
+        </a>
         {% endfor %}
     </div>
 
