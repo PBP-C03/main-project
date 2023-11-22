@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect
+from django.http import HttpResponse
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect
 from django.urls import reverse
 from .models import Cart, Book_Cart
@@ -12,6 +13,7 @@ from django.http import JsonResponse
 
 # Create your views here.
 @login_required
+@csrf_exempt
 def view_cart(request):
     user_cart, created = Cart.objects.get_or_create(user=request.user)
     book_carts = Book_Cart.objects.filter(carts=user_cart)
@@ -46,6 +48,7 @@ def view_cart(request):
     return render(request, 'cartbook.html', context)
 
 @login_required
+@csrf_exempt
 def add_to_cart(request, book_id):
     book = Book.objects.get(id=book_id)
     user_cart, created = Cart.objects.get_or_create(user=request.user)
@@ -71,6 +74,7 @@ def add_to_cart(request, book_id):
     return redirect('cartbook:view_cart')
 
 @login_required
+@csrf_exempt
 def remove_from_cart(request, book_cart_id):
     try:
         book_cart = Book_Cart.objects.get(id=book_cart_id)
@@ -85,6 +89,7 @@ def remove_from_cart(request, book_cart_id):
         return JsonResponse({'success': False, 'error': 'Item not found'}, status=404)
 
 @login_required
+@csrf_exempt
 def tambah_amount(request, book_cart_id):
     book_cart = Book_Cart.objects.get(id=book_cart_id)
     user_cart = book_cart.carts
@@ -96,6 +101,7 @@ def tambah_amount(request, book_cart_id):
     return JsonResponse({'success': True, 'amount': book_cart.amount, 'subtotal': book_cart.subtotal, 'total_harga': user_cart.total_harga})
 
 @login_required
+@csrf_exempt
 def kurang_amount(request, book_cart_id):
     book_cart = Book_Cart.objects.get(id=book_cart_id)
     user_cart = book_cart.carts
@@ -112,6 +118,7 @@ def kurang_amount(request, book_cart_id):
 
 
 @login_required
+@csrf_exempt
 def add_note(request, book_cart_id):
     try:
         book_cart = Book_Cart.objects.get(id=book_cart_id)

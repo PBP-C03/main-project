@@ -9,7 +9,6 @@ class Cart (models.Model):
     total_amount = models.IntegerField(default=0)
     total_harga = models.IntegerField(default=0)
 
-
 # # Buat Objek baru dalam bentuk Book
 class Book_Cart (models.Model): # Untuk Setiap Buku
     amount = models.IntegerField(default=1)
