@@ -1,6 +1,8 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"> 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="addModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -44,6 +46,54 @@
     </div>
     <div id = "title-container" class = "p-3">
         <div id = "title-wrapper">
+            <h5 id ="title-value">My Book</h5>
+        </div>
+    </div>
+    <div id = "content-container" class = "p-3">
+        <div id = "card-container">
+            <div class = "container">
+                <table>
+                    {% for book in books %}
+                    <div class="book-card">
+                        <div class="book-details">
+        
+                            <div class="book-image">
+                                <img src="{{ book.image }}" alt="{{ book.title }}" width="300">
+                            </div>
+                        
+                            <p>{{ book.title }}</p>
+                            <p>IDR {{ book.price }}</p>
+                            <div class="cart-quantity">
+                                <div class="quantity-icons">
+                                    <button title="Tambah" class="custom-button tambah-kurang" data-book-id="{{ book.id }}" data-action="tambah">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                    <p class="book-stocks" id="book-stocks-{{ book.id }}">Stocks : {{ book.stocks }}</p>
+                                    <button title="Kurangi" class="custom-button tambah-kurang" data-book-id="{{ book.id }}" data-action="kurang">
+                                        <i class="fas fa-minus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="warning" style="font-weight: bold;">
+                                <p>{{ book.author }}</p>
+                            </div>
+                            <div class="d-flex">
+                                <a href="{% url 'uploadbook:edit_book' book.id  %}" class="mr-2">
+                                    <button class="btn btn-primary">
+                                        ✎
+                                    </button>
+                                </a>
+                                <button type="button" class="btn btn-danger" onclick="delBook({{ book.id }})">Delete</button>
+                            </div>                            
+                        </div>
+                    </div>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+    </div>
+    <div id = "title-container" class = "p-3">
+        <div id = "title-wrapper">
             <h5 id ="title-value">Riwayat</h5>
         </div>
     </div>
@@ -55,9 +105,18 @@
     <div id = "footer-container" class>
         <div id ="button-container">
             <div class = "button-wrapper">
-                <button class = "action-button">
-                    Tambahkan Buku
-                </button>
+                <a href="{% url 'uploadbook:add_book' %}">
+                    <button class = "action-button">
+                        Tambahkan Buku
+                    </button>
+                </a>
+            </div>
+            <div class = "button-wrapper">
+                <a href="" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                    <button class = "action-button">
+                        Tambahkan Buku AJAX
+                    </button>
+                </a>
             </div>
             <div class = "button-wrapper" id="history-button">
                 <button class = "action-button">
@@ -67,6 +126,61 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Tambahkan Penjualan Buku</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="bookform" onsubmit="return false;">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="isbn" class="col-form-label">ISBN:</label>
+                        <input type="text" class="form-control" id="isbn" name="isbn"></input>
+                    </div>
+                    <div class="mb-3">
+                        <label for="title" class="col-form-label">Title:</label>
+                        <input type="text" class="form-control" id="title" name="title"></input>
+                    </div>
+                    <div class="mb-3">
+                        <label for="author" class="col-form-label">Author:</label>
+                        <input type="text" class="form-control" id="author" name="author"></input>
+                    </div>
+                    <div class="mb-3">
+                        <label for="year" class="col-form-label">Year:</label>
+                        <input type="number" class="form-control" id="year" name="year"></input>
+                    </div>
+                    <div class="mb-3">
+                        <label for="publisher" class="col-form-label">Publisher:</label>
+                        <input type="text" class="form-control" id="publisher" name="publisher"></input>
+                    </div>
+                    <div class="mb-3">
+                        <label for="image" class="col-form-label">Image Link:</label>
+                        <input type="text" class="form-control" id="image" name="image"></input>
+                    </div>
+                    <div class="mb-3">
+                        <label for="price" class="col-form-label">Price:</label>
+                        <input type="number" class="form-control" id="price" name="price"></input>
+                    </div>
+                    <div class="mb-3">
+                        <label for="stocks" class="col-form-label">Stocks:</label>
+                        <input type="number" class="form-control" id="stocks" name="stocks"></input>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="jual_buku" data-bs-dismiss="modal">Add Product</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
 <style>
     #main-container {
         height: 100vh;
@@ -148,14 +262,59 @@
     }
 
     #desc-container {
-    border-radius: 5px;
-    background-color: whitesmoke;
-}
+        border-radius: 5px;
+        background-color: whitesmoke;
+    }
+
     #desc-value {
         padding: 5px;
         max-width: calc(100% - 50px);
     }
 
+    .container {
+        margin: 0 auto;
+        padding: 30px;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 20px;
+    }
+    .book-card {
+        background-color: #f2f2f2;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: center;
+        border-radius: 50px;
+        box-shadow: 2px 7px 25px rgba(0, 0, 0, 0.1);
+        width: 300px;
+        transition: transform 0.3s ease; 
+        padding: 25px;
+    }
+    .book-card:hover {
+        transform: scale(1.05); 
+    }
+    .book-details {
+        text-align: center;
+        font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+        font-size: large;
+    }
+    .book-image {
+        max-width: 500px;
+        background-color: transparent;
+    }
+    .book-image img {
+        border-radius: 50px 50px 0 0;
+        height: 400px;
+        object-fit: cover;
+    }
+
+    .custom-button-remove {
+        background-color: rgb(198, 1, 1);
+    }
+    .custom-button {
+        background-color: rgb(155, 116, 0);
+    }
 </style>
 <script> 
         async function getHistory(id) {
@@ -201,85 +360,244 @@
         }
         document.getElementById("button_add").onclick = addProduct
 
-    function showHistory() {
-    const response = fetch("{% url 'checkoutbook:get_nota' %}", {
-        method: "GET",
-    });
-
-    response.then(async (response) => {
-        const data = await response.json();
-        data.sort((a, b) => a.pk - b.pk);
-
-        let htmlString = "";
-
-        for (let index = 0; index < data.length; index++) {
-            const item = data[index];
-            const desc = await getDesc(item.pk);
-            const order = await getHistory(item.pk)
-            let descString = '';
-            let noteString = '';
-            
-            
-            desc.forEach((item, index) => {
-                const title = item.fields.title;
-                descString += `<p>${index + 1}. ${title} </p>`;
-            });
-            
-            order.forEach((item, index) => {
-                const notes = item.fields.notes;
-                if (notes != ""){
-                    noteString += `<p>${index+1}. ${notes}</p>`
-                }
-            });
-            htmlString += `
-                <div class="card col-md-4 product-card ${index === data.length - 1 ? 'last-product' : ''}" style="width: 30%;min-width:250px; max-height: 400px; min-height: 200px;">
-                    <div class="card-header" style = "background-color: #FFDC00;font-weight: bold ">Nota ${index + 1}</div>
-                    <h5 class="card-title text-center">${item.fields.date}</h5>
-                    <div id="card-content-container">
-                        <p>Harga: IDR ${item.fields.total_harga},00</p>
-                        <p>Total Buku: ${item.fields.total_amount}</p>
-                        <p>Buku:</p>
-                        <div id ="desc-container">
-                            <div id ="desc-value">${descString}</div>
+        function showHistory() {
+            const response = fetch("{% url 'checkoutbook:get_nota' %}", {
+                method: "GET",
+        });
+        response.then(async (response) => {
+            const data = await response.json();
+            data.sort((a, b) => a.pk - b.pk);
+        
+            let htmlString = "";
+        
+            for (let index = 0; index < data.length; index++) {
+                const item = data[index];
+                const desc = await getDesc(item.pk);
+                const order = await getHistory(item.pk)
+                let descString = '';
+                let noteString = '';
+                
+                
+                desc.forEach((item, index) => {
+                    const title = item.fields.title;
+                    descString += `<p>${index + 1}. ${title} </p>`;
+                });
+                
+                order.forEach((item, index) => {
+                    const notes = item.fields.notes;
+                    if (notes != ""){
+                        noteString += `<p>${index+1}. ${notes}</p>`
+                    }
+                });
+                htmlString += `
+                    <div class="card col-md-4 product-card ${index === data.length - 1 ? 'last-product' : ''}" style="width: 30%;min-width:250px; max-height: 400px; min-height: 200px;">
+                        <div class="card-header" style = "background-color: #FFDC00;font-weight: bold ">Nota ${index + 1}</div>
+                        <h5 class="card-title text-center">${item.fields.date}</h5>
+                        <div id="card-content-container">
+                            <p>Harga: IDR ${item.fields.total_harga},00</p>
+                            <p>Total Buku: ${item.fields.total_amount}</p>
+                            <p>Buku:</p>
+                            <div id ="desc-container">
+                                <div id ="desc-value">${descString}</div>
+                            </div>
+                            <p>Alamat: ${item.fields.alamat}</p>
+                            <p>Jasa Pengiriman: ${item.fields.layanan}</p>
+                `;
+                if (noteString != ''){
+                    htmlString += `
+                    <p>Keterangan: </p>
+                            <div id = "notes">${noteString}</div>
                         </div>
-                        <p>Alamat: ${item.fields.alamat}</p>
-                        <p>Jasa Pengiriman: ${item.fields.layanan}</p>
-            `;
-            if (noteString != ''){
-                htmlString += `
-                <p>Keterangan: </p>
-                        <div id = "notes">${noteString}</div>
-                    </div>
-                    <button type="button" class="del-button" onclick="delNota(${item.pk})">Delete</button>
-                </div>`
-            }else{
-                htmlString += `
-                <p>Keterangan: </p>
-                        <div id = "notes"> </div>
-                    </div>
-                    <button type="button" class="del-button" onclick="delNota(${item.pk})">Delete</button>
-                </div>`
+                        <button type="button" class="del-button" onclick="delNota(${item.pk})">Delete</button>
+                    </div>`
+                }else{
+                    htmlString += `
+                    <p>Keterangan: </p>
+                            <div id = "notes"> </div>
+                        </div>
+                        <button type="button" class="del-button" onclick="delNota(${item.pk})">Delete</button>
+                    </div>`
+                }
+            
             }
-
+        
+            document.getElementById("card-wrapper").innerHTML = htmlString;
+        });
         }
+        showHistory()
 
-        document.getElementById("card-wrapper").innerHTML = htmlString;
-    });
-    }
-    showHistory()
+        document.getElementById("history-button").onclick = showHistory;
 
-document.getElementById("history-button").onclick = showHistory;
-
-            document.getElementById("history-button").onclick = showHistory
-
-            function delNota(id){
-            const url = `{% url 'checkoutbook:del_nota' 0 %}`.replace('0', id);
-            return fetch(url,{method:'POST'}).then(showHistory);
-        }
-    
         async function getBook(id){
             const url = `{% url 'checkoutbook:get_book' 0 %}`.replace('0', id);
             return fetch(url).then((res) => res.json());
         }
+        
+        async function delBook(id) {
+                const response = await fetch(`{% url 'uploadbook:delete_book_ajax' 0 %}`.replace("0", id), {
+                    method: "POST",
+                });
+
+                if (response.status === 200) {
+                    refreshBooks();
+                } else if (response.status === 404) {
+                    console.log("Buku tidak ada");
+                } else {
+                    console.log("Error deleting book");
+                }
+            }
+
+        async function getBooks() {
+                return fetch("{% url 'uploadbook:get_book_json' %}",{method:'GET'}).then((res) => res.json())
+        }
+                
+        async function refreshBooks() {
+            document.getElementById("product_table").innerHTML = "";
+            const books = await getBooks();
+                
+            const container = document.createElement("div");
+            container.className = "container";
+                
+            books.forEach((book) => {
+                const bookCard = document.createElement("div");
+                bookCard.className = "book-card";
+
+                const bookDetails = document.createElement("div");
+                bookDetails.className = "book-details";
+
+                const bookImage = document.createElement("div");
+                bookImage.className = "book-image";
+
+                const image = document.createElement("img");
+                image.src = book.fields.image;
+                image.alt = book.fields.title;
+                image.width = 300;
+
+                bookImage.appendChild(image);
+
+                const title = document.createElement("p");
+                title.textContent = book.fields.title;
+
+                const price = document.createElement("p");
+                price.textContent = `IDR ${book.fields.price}`;
+
+                const stocks = document.createElement("p");
+                stocks.textContent = `Stock: ${book.fields.stocks}`;
+
+                const authorDiv = document.createElement("div");
+                authorDiv.className = "warning";
+                authorDiv.style.fontWeight = "bold";
+
+                const author = document.createElement("p");
+                author.textContent = book.fields.author;
+
+                authorDiv.appendChild(author);
+
+                // Create Tambah (Add) button
+                const tambahButton = document.createElement("button");
+                tambahButton.title = "Tambah";
+                tambahButton.className = "custom-button tambah-kurang";
+                tambahButton.dataset.bookId = book.fields.id;
+                tambahButton.dataset.action = "tambah";
+                const plusIcon = document.createElement("i");
+                plusIcon.className = "fas fa-plus";
+                tambahButton.appendChild(plusIcon);
+
+                // Create Kurangi (Reduce) button
+                const kurangiButton = document.createElement("button");
+                kurangiButton.title = "Kurangi";
+                kurangiButton.className = "custom-button tambah-kurang";
+                kurangiButton.dataset.bookId = book.fields.id;
+                kurangiButton.dataset.action = "kurang";
+                const minusIcon = document.createElement("i");
+                minusIcon.className = "fas fa-minus";
+                kurangiButton.appendChild(minusIcon);
+
+                const editBook = document.createElement("button");
+                editBook.title = "Edit";
+                editBook.className = "custom-button tambah-kurang";
+                editBook.dataset.bookId = book.fields.id;
+                editBook.dataset.action = "kurang";
+                const editIcon = document.createElement("i");
+                editIcon.className = "fas fa-minus";
+                editBook.appendChild(editIcon);
+                // Append the buttons to the bookDetails element
+                bookDetails.appendChild(bookImage);
+                bookDetails.appendChild(title);
+                bookDetails.appendChild(price);
+                bookDetails.appendChild(tambahButton);
+                bookDetails.appendChild(stocks);
+                bookDetails.appendChild(kurangiButton);
+                bookDetails.appendChild(authorDiv);
+
+                bookCard.appendChild(bookDetails);
+                container.appendChild(bookCard);
+            });
+    
+            document.getElementById("product_table").appendChild(container);
+        }
+
+        function addBook() {
+            fetch("{% url 'uploadbook:add_book_ajax' %}", {
+                method: "POST",
+                body: new FormData(document.querySelector('#bookform'))
+            })
+            .then(refreshBooks)
+
+            document.getElementById("bookform").reset()
+            return false
+        }
+
+        document.getElementById("jual_buku").onclick = addBook
+
+        refreshBooks()
+
+        $(document).ready(function () {
+            $(".custom-button-remove").click(function () {
+                var bookId = $(this).data("product-id");
+    
+                $.ajax({
+                    url: '/uploadbook/delete-book/' + bookId + '/',
+                    type: 'POST',
+                    data: {
+                        csrfmiddlewaretoken: '{{ csrf_token }}',
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            $('#product-' + bookId).remove();
+                        }
+                    },
+                    error: function (error) {
+                        console.log('Error:', error);
+                    }
+                });
+            });
+
+            $(".tambah-kurang").click(function () {
+                var bookId = $(this).data("book-id");
+                var action = $(this).data("action");
+                
+                $.ajax({
+                    url: '/uploadbook/' + action + '-stocks/' + bookId + '/',
+                    type: 'POST',
+                    data: {
+                        csrfmiddlewaretoken: '{{ csrf_token }}',
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            // Update the amount, subtotal and total price in the view
+                            $('#book-stocks-' + bookId).html(response.stocks);
+                            // Remove the item from the cart if it was deleted
+                            if (response.deleted) {
+                                $('#book-' + Id).remove();
+                            }
+                        }
+                    },
+                    error: function (error) {
+                        console.log('Error:', error);
+                    }
+                });
+            });
+        });
 </script>
 {% endblock content %}
