@@ -13,6 +13,7 @@ from django.http import HttpResponse,HttpResponseNotFound
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from django.core.serializers import serialize
+from django.core import serializers
 
 @csrf_exempt
 def show_main(request):
@@ -23,6 +24,11 @@ def show_main(request):
     }
 
     return render(request, "main.html", context)
+
+@csrf_exempt
+def show_json(request):
+    data = Book.objects.all()
+    return HttpResponse(serializers.serialize("json", data), content_type="application/json")
 
 @csrf_exempt
 def show_catalog(request):
