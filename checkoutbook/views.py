@@ -28,7 +28,21 @@ def get_desc(request,id):
             books.append(Book.objects.get(pk = item.book.pk))
         return HttpResponse(serialize('json', books))
     return HttpResponseNotFound() 
+@login_required
+@csrf_exempt
+def get_user(request):
+    if request.method == 'GET':
+        user = request.user
+        return HttpResponse(serialize('json', [user]))
+    return HttpResponseNotFound() 
 
+@login_required
+@csrf_exempt
+def get_all_order(request):
+    if request.method == 'GET':
+        book_cart = Book_Cart.objects.all()
+        return HttpResponse(serialize('json', book_cart))
+    return HttpResponseNotFound()
 @login_required
 @csrf_exempt
 def get_order(request):
@@ -36,6 +50,14 @@ def get_order(request):
         cart = Cart.objects.get(user=request.user)
         book_cart = Book_Cart.objects.filter(carts = cart)
         return HttpResponse(serialize('json', book_cart))
+    return HttpResponseNotFound()
+
+@login_required
+@csrf_exempt
+def get_cart(request):
+    if request.method == 'GET':
+        cart = Cart.objects.get(user=request.user)
+        return HttpResponse(serialize('json', [cart]))
     return HttpResponseNotFound()
 
 @login_required
