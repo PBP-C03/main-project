@@ -51,7 +51,7 @@ def show_nota_json(request):
 
 @csrf_exempt
 def show_question_json(request):
-    question = Nota.objects.all()
+    question = Question.objects.all()
     return HttpResponse(serializers.serialize("json", question ), content_type="application/json")
 
 @csrf_exempt
