@@ -80,6 +80,10 @@ def remove_from_cart(request, book_cart_id):
         book_cart = Book_Cart.objects.get(id=book_cart_id)
         user_cart = book_cart.carts
 
+        if not user_cart:
+            # Handle the case where user_cart is None
+            return JsonResponse({'success': False, 'error': 'User cart not found'}, status=404)
+
         # Update total amount and total price
         user_cart.total_amount -= book_cart.amount
         user_cart.total_harga -= (book_cart.book.price * book_cart.amount)
@@ -88,11 +92,7 @@ def remove_from_cart(request, book_cart_id):
         if user_cart.total_amount <= 0:
             user_cart.total_amount = 0
             user_cart.total_harga = 0
-            book_cart.delete()
-            user_cart.save()
-            return JsonResponse({'success': True, 'message': 'Cart is empty, item removed', 'total_harga': user_cart.total_harga})
 
-        # Otherwise, save the changes and keep the book_cart
         user_cart.save()
         book_cart.delete()
 
