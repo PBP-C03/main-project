@@ -55,6 +55,8 @@ INSTALLED_APPS = [
     'corsheaders',
 ]
 
+CSRF_TRUSTED_ORIGINS = ['https://gethebooks-c03-tk.pbp.cs.ui.ac.id']
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
