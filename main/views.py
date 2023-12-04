@@ -80,7 +80,6 @@ def show_catalog(request):
 
     return render(request, "catalog.html", context)
 
-@csrf_exempt
 def signup(request):
     form = UserCreationForm()
 
@@ -98,7 +97,6 @@ def signup(request):
     context = {'form':form}
     return render(request, 'signup.html', context)
 
-@csrf_exempt
 def login_user(request):
     if request.method == 'POST':
         username = request.POST.get('username')
