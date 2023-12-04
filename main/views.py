@@ -1,5 +1,9 @@
 from django.shortcuts import render
 from book.models import Book
+from cartbook.models import Cart, Book_Cart
+from checkoutbook.models import Nota
+from qna.models import Question, Comment
+from reviewbook.models import Review
 from main.models import Profile
 from uploadbook.models import UploadBook
 from cartbook.models import Cart
@@ -13,6 +17,7 @@ from django.http import HttpResponse,HttpResponseNotFound
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from django.core.serializers import serialize
+from django.core import serializers
 
 @csrf_exempt
 def show_main(request):
@@ -23,6 +28,46 @@ def show_main(request):
     }
 
     return render(request, "main.html", context)
+
+@csrf_exempt
+def show_json(request):
+    data = Book.objects.all()
+    return HttpResponse(serializers.serialize("json", data), content_type="application/json")
+
+@csrf_exempt
+def show_bookcart_json(request):
+    book_cart = Book_Cart.objects.all()
+    return HttpResponse(serializers.serialize("json", book_cart), content_type="application/json")
+
+@csrf_exempt
+def show_cart_json(request):
+    cart = Cart.objects.all()
+    return HttpResponse(serializers.serialize("json", cart), content_type="application/json")
+
+@csrf_exempt
+def show_nota_json(request):
+    nota = Nota.objects.all()
+    return HttpResponse(serializers.serialize("json", nota), content_type="application/json")
+
+@csrf_exempt
+def show_question_json(request):
+    question = Question.objects.all()
+    return HttpResponse(serializers.serialize("json", question ), content_type="application/json")
+
+@csrf_exempt
+def show_comment_json(request):
+    comment = Comment.objects.all()
+    return HttpResponse(serializers.serialize("json", comment), content_type="application/json")
+
+@csrf_exempt
+def show_review_json(request):
+    review = Review.objects.all()
+    return HttpResponse(serializers.serialize("json", review), content_type="application/json")
+
+@csrf_exempt
+def show_uploadbook_json(request):
+    uploadbook = UploadBook.objects.all()
+    return HttpResponse(serializers.serialize("json", uploadbook), content_type="application/json")
 
 @csrf_exempt
 def show_catalog(request):

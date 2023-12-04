@@ -24,7 +24,7 @@ urlpatterns = [
     path('qna/', include('qna.urls')),
     path('book/', include('reviewbook.urls')),
     path('cartbook/', include('cartbook.urls')),
-    path('checkout/', include('checkoutbook.urls')), 
-    path('auth/', include('authentication.urls')),  
+    path('checkout/', include('checkoutbook.urls')),   
     path('uploadbook/', include('uploadbook.urls')), 
+    path('auth/', include('authentication.urls')),
 ]
