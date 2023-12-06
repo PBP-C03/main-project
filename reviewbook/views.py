@@ -1,8 +1,9 @@
+import json
 from django.shortcuts import get_object_or_404, render
 from book.models import Book
 from reviewbook.models import Review
 from reviewbook.forms import ReviewForm, EditReviewForm
-from django.http import HttpResponseNotFound, HttpResponse
+from django.http import HttpResponseNotFound, HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 from django.core import serializers
@@ -40,25 +41,22 @@ def show_review(request, id):
         }
     return render(request, "review.html", context)
 
-@login_required(login_url='/login')
+
 def get_reviews(request, id):
     book = Book.objects.get(pk = id)
     review = Review.objects.filter(book=book)
     return HttpResponse(serializers.serialize('json', review))
 
-@login_required(login_url='/login')
 def get_reviews_rating(request, id, rating):
     book = Book.objects.get(pk=id)
     review = Review.objects.filter(book=book, rating=rating)
     return HttpResponse(serializers.serialize('json', review))
 
-@login_required(login_url='/login')
 def get_user_review(request, id):
     book = Book.objects.get(pk = id)
     review = Review.objects.filter(user=request.user, book=book)
     return HttpResponse(serializers.serialize('json', review))
 
-@login_required(login_url='/login')
 def edit_review(request, id, reviewId):
     review = get_object_or_404(Review, pk = reviewId)
     if request.method == "POST":
@@ -71,7 +69,6 @@ def edit_review(request, id, reviewId):
         form = EditReviewForm(instance=review)
 
 @csrf_exempt
-@login_required(login_url='/login')
 def add_review(request, id):
     if request.method == 'POST':
         rating = request.POST.get("rating")
@@ -87,10 +84,27 @@ def add_review(request, id):
     return HttpResponseNotFound()
 
 @csrf_exempt
-@login_required(login_url='/login')
 def delete_review(request, id, reviewId):
     if request.method == 'DELETE':
         review = Review.objects.get(pk = reviewId)
         review.delete()
         return HttpResponse(b"DELETED", status=200)
     return HttpResponseNotFound()
+
+def create_review_flutter(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+
+        new_review = Review.objects.create(
+            user = request.user,
+            username = request.user.username,
+            rating = int(data["rating"]),
+            review = data["review"],
+            # book = TODO
+        )
+
+        new_review.save()
+
+        return JsonResponse({"status": "success"}, status=200)
+    else:
+        return JsonResponse({"status": "error"}, status=401)
