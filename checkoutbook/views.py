@@ -1,3 +1,4 @@
+import json
 from django.shortcuts import render
 from book.models import Book
 from main.models import Profile
@@ -28,7 +29,21 @@ def get_desc(request,id):
             books.append(Book.objects.get(pk = item.book.pk))
         return HttpResponse(serialize('json', books))
     return HttpResponseNotFound() 
+@login_required
+@csrf_exempt
+def get_user(request):
+    if request.method == 'GET':
+        user = request.user
+        return HttpResponse(serialize('json', [user]))
+    return HttpResponseNotFound() 
 
+@login_required
+@csrf_exempt
+def get_all_order(request):
+    if request.method == 'GET':
+        book_cart = Book_Cart.objects.all()
+        return HttpResponse(serialize('json', book_cart))
+    return HttpResponseNotFound()
 @login_required
 @csrf_exempt
 def get_order(request):
@@ -36,6 +51,15 @@ def get_order(request):
         cart = Cart.objects.get(user=request.user)
         book_cart = Book_Cart.objects.filter(carts = cart)
         return HttpResponse(serialize('json', book_cart))
+    return HttpResponseNotFound()
+
+@login_required
+@csrf_exempt
+# @csrf_exempt
+def get_cart(request):
+    if request.method == 'GET':
+        cart = Cart.objects.get(user=request.user)
+        return HttpResponse(serialize('json', [cart]))
     return HttpResponseNotFound()
 
 @login_required
@@ -121,11 +145,33 @@ def inc_book(request,id):
         cart = get_object_or_404(Cart, user=request.user)
         order = Book_Cart.objects.filter(carts = cart)
         book = order.get(book = id)
+        data = Book.objects.get(pk = book.book)
+
         book.amount+=1
         book.save()
+
+        cart.total_amount += 1
+        cart.total_harga += data.price
+
+        cart.save()
         return HttpResponse(b"SUCCESS",status=201)
     return HttpResponseBadRequest(b"FAILED")
 
+@login_required
+@csrf_exempt
+def set_book_mob(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        pk = data.get('pk')
+        amount = data.get('amount')
+        order = Book_Cart.objects.get(pk = pk)
+        order.amount = amount
+        if (amount<=0):
+            order.delete()
+        else:
+            order.save()
+        return HttpResponse(b"SUCCESS",status=201)
+    return HttpResponseBadRequest(b"FAILED")
 
 @login_required
 @csrf_exempt
@@ -134,6 +180,13 @@ def dec_book(request,id):
         cart = get_object_or_404(Cart, user=request.user)
         order = Book_Cart.objects.filter(carts = cart)
         book = order.get(book = id)
+        data = Book.objects.get(pk = book.book)
+
+
+        cart.total_amount -= 1
+        cart.total_harga -= data.price
+
+        cart.save()
         if book.amount - 1 == 0 :
             book.delete()
         else:
