@@ -48,7 +48,7 @@ def view_cart(request):
     return render(request, 'cartbook.html', context)
 
 @login_required
-@csrf_exempt
+
 def add_to_cart(request, book_id):
     book = Book.objects.get(id=book_id)
     user_cart, created = Cart.objects.get_or_create(user=request.user)
