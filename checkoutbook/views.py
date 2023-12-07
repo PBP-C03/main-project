@@ -1,3 +1,4 @@
+import json
 from django.shortcuts import render
 from book.models import Book
 from main.models import Profile
@@ -54,6 +55,7 @@ def get_order(request):
 
 @login_required
 @csrf_exempt
+# @csrf_exempt
 def get_cart(request):
     if request.method == 'GET':
         cart = Cart.objects.get(user=request.user)
@@ -143,11 +145,33 @@ def inc_book(request,id):
         cart = get_object_or_404(Cart, user=request.user)
         order = Book_Cart.objects.filter(carts = cart)
         book = order.get(book = id)
+        data = Book.objects.get(pk = book.book)
+
         book.amount+=1
         book.save()
+
+        cart.total_amount += 1
+        cart.total_harga += data.price
+
+        cart.save()
         return HttpResponse(b"SUCCESS",status=201)
     return HttpResponseBadRequest(b"FAILED")
 
+@login_required
+@csrf_exempt
+def set_book_mob(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        pk = data.get('pk')
+        amount = data.get('amount')
+        order = Book_Cart.objects.get(pk = pk)
+        order.amount = amount
+        if (amount<=0):
+            order.delete()
+        else:
+            order.save()
+        return HttpResponse(b"SUCCESS",status=201)
+    return HttpResponseBadRequest(b"FAILED")
 
 @login_required
 @csrf_exempt
@@ -156,6 +180,13 @@ def dec_book(request,id):
         cart = get_object_or_404(Cart, user=request.user)
         order = Book_Cart.objects.filter(carts = cart)
         book = order.get(book = id)
+        data = Book.objects.get(pk = book.book)
+
+
+        cart.total_amount -= 1
+        cart.total_harga -= data.price
+
+        cart.save()
         if book.amount - 1 == 0 :
             book.delete()
         else:
