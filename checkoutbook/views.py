@@ -145,7 +145,7 @@ def inc_book(request,id):
         cart = get_object_or_404(Cart, user=request.user)
         order = Book_Cart.objects.filter(carts = cart)
         book = order.get(book = id)
-        data = Book.objects.get(pk = book.book)
+        data = Book.objects.get(pk = book.book.pk)
 
         book.amount+=1
         book.save()
@@ -180,7 +180,7 @@ def dec_book(request,id):
         cart = get_object_or_404(Cart, user=request.user)
         order = Book_Cart.objects.filter(carts = cart)
         book = order.get(book = id)
-        data = Book.objects.get(pk = book.book)
+        data = Book.objects.get(pk = book.book.pk)
 
 
         cart.total_amount -= 1
@@ -202,6 +202,11 @@ def del_book(request,id):
         cart = get_object_or_404(Cart, user=request.user)
         order = Book_Cart.objects.filter(carts = cart)
         book = order.get(book = id)
+        data = Book.objects.get(pk = book.book.pk)
+
+        cart.total_amount -= book.amount
+        cart.total_harga -= (book.amount*data.price)
         book.delete()
+        cart.save()
         return HttpResponse(b"SUCCESS",status=201)
     return HttpResponseBadRequest(b"FAILED")
