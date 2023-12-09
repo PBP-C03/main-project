@@ -113,7 +113,7 @@ def del_nota(request,id):
 @csrf_exempt
 def pay_order(request):
     form = NotaForm(request.POST or None)
-    if request.method == 'POST' and form.is_valid():
+    if request.method == 'POST':
         profile = get_object_or_404(Profile, user=request.user)
         cart = get_object_or_404(Cart, user=request.user)
         alamat = request.POST.get("Alamat")
