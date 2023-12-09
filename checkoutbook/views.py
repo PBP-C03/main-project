@@ -140,6 +140,35 @@ def pay_order(request):
 
 @login_required
 @csrf_exempt
+def pay(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        profile = get_object_or_404(Profile, user=request.user)
+        cart = get_object_or_404(Cart, user=request.user)
+        alamat = data.get("alamat")
+        layanan = data.get("layanan")
+        if profile.saldo >= cart.total_harga:
+            nota = Nota(user=request.user, total_amount=cart.total_amount, total_harga=cart.total_harga, alamat=alamat, layanan=layanan)
+            nota.save()
+            orders = Book_Cart.objects.filter(carts=cart)
+            for order in orders.iterator():
+                order.book.stocks -= order.amount
+                order.nota = nota
+                order.save()
+                order.book.save()
+
+            profile.saldo -= cart.total_harga
+            profile.save()
+            cart.delete()
+            new_cart = Cart(user=request.user)
+            new_cart.save()
+            return HttpResponse(b"SUCCESS", status=201)
+        return HttpResponseBadRequest(b"FAILED")
+
+    return HttpResponseNotFound()
+
+@login_required
+@csrf_exempt
 def inc_book(request,id):
     if request.method == 'POST':
         cart = get_object_or_404(Cart, user=request.user)
