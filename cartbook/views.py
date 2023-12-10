@@ -49,7 +49,7 @@ def view_cart(request):
     return render(request, 'cartbook.html', context)
 
 @login_required
-@csrf_exempt
+
 def add_to_cart(request, book_id):
     book = Book.objects.get(id=book_id)
     user_cart, created = Cart.objects.get_or_create(user=request.user)
@@ -111,6 +111,7 @@ def tambah_amount(request, book_cart_id):
     book_cart.subtotal += book_cart.book.price
     book_cart.save()
     user_cart.total_harga += book_cart.book.price
+    user_cart.total_amount += 1
     user_cart.save()
     return JsonResponse({'success': True, 'amount': book_cart.amount, 'subtotal': book_cart.subtotal, 'total_harga': user_cart.total_harga})
 
@@ -123,6 +124,7 @@ def kurang_amount(request, book_cart_id):
         book_cart.amount -= 1
         book_cart.subtotal -= book_cart.book.price
         user_cart.total_harga -= book_cart.book.price
+        user_cart.total_amount -= 1
         book_cart.save()
         user_cart.save()
     if book_cart.amount == 0:

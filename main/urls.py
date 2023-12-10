@@ -2,7 +2,7 @@ from django.urls import path
 from main.views import show_json, show_main, show_bookcart_json, show_cart_json, show_comment_json, show_nota_json, show_question_json, show_review_json, show_uploadbook_json
 from main.views import signup
 from main.views import login_user, tambah_stocks, kurang_stocks, delete_book
-from main.views import logout_user,show_catalog,account_user,insert_balance,get_saldo
+from main.views import logout_user,show_catalog,account_user,insert_balance,get_saldo,topup
 
 app_name = 'main'
 
@@ -26,4 +26,5 @@ urlpatterns = [
     path('tambah-stocks/<int:id>', tambah_stocks, name='tambah_stocks'),
     path('kurang-stocks/<int:id>', kurang_stocks, name='kurang_stocks'),
     path('delete-book/<int:id>', delete_book, name='delete_book'),
+    path('topup/', topup, name='topup'),
 ]
