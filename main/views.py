@@ -1,3 +1,4 @@
+import json
 from django.shortcuts import render
 from book.models import Book
 from cartbook.models import Cart, Book_Cart
@@ -127,6 +128,7 @@ def account_user(request):
     }
     return render(request,'profile.html',context)
 
+@login_required
 @csrf_exempt
 def insert_balance(request):
     if request.method == 'POST':
@@ -138,6 +140,20 @@ def insert_balance(request):
 
     return HttpResponseNotFound()
 
+@login_required
+@csrf_exempt
+def topup(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        jumlah = int(data.get("jumlah"))
+        profile = Profile.objects.get(user=request.user)
+        profile.saldo += jumlah
+        profile.save()
+        return HttpResponse(b"CREATED", status=201)
+
+    return HttpResponseNotFound()
+
+@login_required
 @csrf_exempt
 def get_saldo(request):
     if request.method == 'GET':
