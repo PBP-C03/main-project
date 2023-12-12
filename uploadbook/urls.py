@@ -1,5 +1,5 @@
 from django.urls import path
-from uploadbook.views import get_book_json, add_book_ajax, add_book, delete_book, kurang_stocks, tambah_stocks, edit_book, delete_book_ajax
+from uploadbook.views import *
 
 app_name = 'uploadbook'
 
@@ -12,4 +12,6 @@ urlpatterns = [
     path('kurang-stocks/<int:id>', kurang_stocks, name='kurang_stocks'),
     path('delete-book/<int:id>', delete_book, name='delete_book'),
     path('delete_book_ajax/<int:id>/', delete_book_ajax, name='delete_book_ajax'),
+    path('upload-book-json/', upload_book_json, name='upload_book_json'),
+
 ]

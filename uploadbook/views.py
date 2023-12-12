@@ -1,4 +1,5 @@
 import datetime
+import json
 from django.http import HttpResponseBadRequest, HttpResponseNotFound, HttpResponseRedirect, HttpResponse, Http404
 from django.urls import reverse
 from django.shortcuts import get_object_or_404, redirect
@@ -110,3 +111,30 @@ def delete_book_ajax(request, id):
             return HttpResponse("Buku tidak ada", status=404)
 
     return HttpResponseNotFound()
+
+@login_required
+@csrf_exempt
+def upload_book_json(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            isbn = data.get("isbn")
+            title = data.get("title")
+            author = data.get("author")
+            year = data.get("year")
+            publisher = data.get("publisher")
+            image = data.get("image")
+            price = data.get("price")
+            stocks = data.get("stocks")
+            user = request.user
+
+            new_book = Book.objects.create(isbn=isbn, title=title, author=author, year=year, publisher=publisher, image=image, price=price, stocks=stocks)
+            new_book.save()
+            upload_book = UploadBook.objects.create(isbn=isbn, title=title, author=author, year=year, publisher=publisher, image=image, price=price, stocks=stocks, user=user)
+            upload_book.save()
+
+            return JsonResponse({"status": "success"}, status=201)
+        except KeyError:
+            return JsonResponse({"status": "error", "message": "Invalid data provided"}, status=400)
+    else:
+        return JsonResponse({"status": "error", "message": "Invalid request"}, status=401)
