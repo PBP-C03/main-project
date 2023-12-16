@@ -1,5 +1,5 @@
 from django.urls import include, path
-from qna.views import forum, ask_question, add_answer, get_question_data, add_comment
+from qna.views import *
 from django.contrib.auth import views as auth_views
 from . import views
 app_name = 'qna'
@@ -13,5 +13,8 @@ urlpatterns = [
     path('delete_question/<int:id>/', views.delete_question, name='delete_question'),
     path('question/<int:id>/', views.view_question, name='view_question'),
     path('accounts/', include('django.contrib.auth.urls')),
+    path('add-question-json/', add_question_json, name='add_question_json'),
+    path('delete-question-json/', delete_question_json, name='delete_question_json'),
+
     # path('question/<int:question_id>/', views.question_detail, name='question_detail'),
 ]

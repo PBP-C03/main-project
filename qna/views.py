@@ -1,4 +1,5 @@
 from audioop import reverse
+import json
 from django.shortcuts import render, redirect
 from .models import Question, Comment
 from django.contrib.auth.decorators import login_required
@@ -96,3 +97,43 @@ def delete_question(request, id):
 def view_question(request, id):
     question = get_object_or_404(Question, pk=id)
     return render(request, 'view_single_question.html', {'question': question})
+
+@login_required
+@csrf_exempt
+def add_question_json(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            form = QuestionForm(data)
+            if form.is_valid():
+                question = form.save(commit=False)
+                question.user = request.user
+                question.save()
+                return JsonResponse({'result': 'Success!', 'id': question.id})
+            else:
+                return JsonResponse({'result': 'Fail!', 'errors': form.errors.as_json()}, status=400)
+        except json.JSONDecodeError:
+            return JsonResponse({'result': 'Fail!', 'errors': 'Invalid JSON'}, status=400)
+    else:
+        return JsonResponse({'result': 'Fail!', 'errors': 'Invalid request method'}, status=405)
+    
+@login_required
+@csrf_exempt
+def delete_question_json(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            question_id = data.get("id")
+            question = get_object_or_404(Question, pk=question_id)
+
+            if request.user == question.user:
+                question.delete()
+                return JsonResponse({'result': 'Success!', 'message': 'Question deleted'})
+            else:
+                return JsonResponse({'result': 'Fail!', 'errors': 'You are not the creator of this question'}, status=403)
+        except json.JSONDecodeError:
+            return JsonResponse({'result': 'Fail!', 'errors': 'Invalid JSON'}, status=400)
+        except Question.DoesNotExist:
+            return JsonResponse({'result': 'Fail!', 'errors': 'Question not found'}, status=404)
+    else:
+        return JsonResponse({'result': 'Fail!', 'errors': 'Invalid request method'}, status=405)
