@@ -1,8 +1,9 @@
+import json
 from django.shortcuts import get_object_or_404, render
 from book.models import Book
 from reviewbook.models import Review
 from reviewbook.forms import ReviewForm, EditReviewForm
-from django.http import HttpResponseNotFound, HttpResponse
+from django.http import HttpResponseNotFound, HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 from django.core import serializers
@@ -94,3 +95,21 @@ def delete_review(request, id, reviewId):
         review.delete()
         return HttpResponse(b"DELETED", status=200)
     return HttpResponseNotFound()
+
+def create_review_flutter(request, id):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+
+        new_review = Review.objects.create(
+            user = request.user,
+            username = request.user.username,
+            rating = int(data["rating"]),
+            review = data["review"],
+            book = Book.objects.get(pk = id)
+        )
+
+        new_review.save()
+
+        return JsonResponse({"status": "success"}, status=200)
+    else:
+        return JsonResponse({"status": "error"}, status=401)
