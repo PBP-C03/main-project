@@ -91,7 +91,7 @@ def delete_review(request, id, reviewId):
         return HttpResponse(b"DELETED", status=200)
     return HttpResponseNotFound()
 
-def create_review_flutter(request):
+def create_review_flutter(request, id):
     if request.method == 'POST':
         data = json.loads(request.body)
 
@@ -100,7 +100,7 @@ def create_review_flutter(request):
             username = request.user.username,
             rating = int(data["rating"]),
             review = data["review"],
-            # book = TODO
+            book = Book.objects.get(pk = id)
         )
 
         new_review.save()
