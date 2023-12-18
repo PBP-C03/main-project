@@ -37,13 +37,22 @@ def show_json(request):
 
 @csrf_exempt
 def show_bookcart_json(request):
-    book_cart = Book_Cart.objects.all()
-    return HttpResponse(serializers.serialize("json", book_cart), content_type="application/json")
+    user_cart = Cart.objects.filter(user=request.user).first()
+    if not user_cart:
+        return JsonResponse({'error': 'Cart not found'}, status=404)
+
+    book_carts = Book_Cart.objects.filter(carts=user_cart)
+    data = serializers.serialize("json", book_carts)
+    return HttpResponse(data, content_type="application/json")
 
 @csrf_exempt
 def show_cart_json(request):
-    cart = Cart.objects.all()
-    return HttpResponse(serializers.serialize("json", cart), content_type="application/json")
+    user_cart = Cart.objects.filter(user=request.user).first()
+    if not user_cart:
+        return JsonResponse({'error': 'Cart not found'}, status=404)
+
+    data = serializers.serialize("json", [user_cart])
+    return HttpResponse(data, content_type="application/json")
 
 @csrf_exempt
 def show_nota_json(request):
