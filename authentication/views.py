@@ -1,3 +1,4 @@
+import json
 from django.shortcuts import render
 
 # Create your views here.
@@ -6,6 +7,11 @@ from django.contrib.auth import authenticate, login as auth_login
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import logout as auth_logout
+from django.contrib.auth.models import User
+from django.contrib.auth.hashers import make_password
+from cartbook.models import Cart
+
+from main.models import Profile
 
 @csrf_exempt
 def login(request):
@@ -52,3 +58,35 @@ def logout(request):
         "status": False,
         "message": "Logout gagal."
         }, status=401)
+    
+@csrf_exempt
+def register(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            username = data.get('username')
+            password = data.get('password')
+
+            # Validasi input
+            if not username or not password:
+                return JsonResponse({'status': False, 'message': 'Username dan password harus diisi.'}, status=400)
+
+            # Cek apakah username sudah terpakai
+            if User.objects.filter(username=username).exists():
+                return JsonResponse({'status': False, 'message': 'Username sudah digunakan.'}, status=400)
+
+            # Buat user baru
+            user = User.objects.create_user(username=username, password=password)
+            user.save()
+
+            # Buat profil dan keranjang untuk user
+            profile = Profile(user=user, saldo=0)
+            cart_user = Cart(user=user, total_amount=0, total_harga=0)
+            profile.save()
+            cart_user.save()
+
+            return JsonResponse({'status': True, 'message': 'Registrasi berhasil.'}, status=201)
+        except json.JSONDecodeError:
+            return JsonResponse({'status': False, 'message': 'Request tidak valid.'}, status=400)
+    else:
+        return JsonResponse({'status': False, 'message': 'Metode request tidak diperbolehkan.'}, status=405)
