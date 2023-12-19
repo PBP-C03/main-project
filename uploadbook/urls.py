@@ -13,5 +13,8 @@ urlpatterns = [
     path('delete-book/<int:id>', delete_book, name='delete_book'),
     path('delete_book_ajax/<int:id>/', delete_book_ajax, name='delete_book_ajax'),
     path('upload-book-json/', upload_book_json, name='upload_book_json'),
+    path('delete-book-json/', delete_book_json, name='delete_book_json'),
+    path('tambah-stocks-json/', tambah_stocks_json, name='tambah_stocks_json'),
+    path('kurang-stocks-json/', kurang_stocks_json, name='kurang_stocks_json'),
 
 ]

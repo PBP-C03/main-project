@@ -104,11 +104,16 @@ def add_book_ajax(request):
 def delete_book_ajax(request, id):
     if request.method == 'POST':
         try:
-            data = UploadBook.objects.get(id=id)
-            data.delete()
+            upload_book = UploadBook.objects.get(id=id)
+            book_main = Book.objects.get(isbn=upload_book.isbn)
+            
+            upload_book.delete()
+            book_main.delete()
             return HttpResponse("OK", status=200)
+        except UploadBook.DoesNotExist:
+            return HttpResponse("Buku tidak ada di UploadBook", status=404)
         except Book.DoesNotExist:
-            return HttpResponse("Buku tidak ada", status=404)
+            return HttpResponse("Buku tidak ada di Book", status=404)
 
     return HttpResponseNotFound()
 
@@ -138,3 +143,89 @@ def upload_book_json(request):
             return JsonResponse({"status": "error", "message": "Invalid data provided"}, status=400)
     else:
         return JsonResponse({"status": "error", "message": "Invalid request"}, status=401)
+    
+@csrf_exempt
+def delete_book_json(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            book_id = data.get("id")
+            
+            upload_book = UploadBook.objects.get(id=book_id)
+            book_main = Book.objects.get(isbn=upload_book.isbn)
+
+            upload_book.delete()
+            book_main.delete()
+
+            return JsonResponse({"status": "success", "message": "Buku berhasil dihapus"}, status=200)
+
+        except UploadBook.DoesNotExist:
+            return JsonResponse({"status": "error", "message": "Buku tidak ada di UploadBook"}, status=404)
+
+        except Book.DoesNotExist:
+            return JsonResponse({"status": "error", "message": "Buku tidak ada di Book"}, status=404)
+
+        except json.JSONDecodeError:
+            return JsonResponse({"status": "error", "message": "Invalid JSON"}, status=400)
+
+        except KeyError:
+            return JsonResponse({"status": "error", "message": "ID buku tidak disediakan"}, status=400)
+
+    else:
+        return JsonResponse({"status": "error", "message": "Invalid request method"}, status=405)
+
+@csrf_exempt
+def tambah_stocks_json(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            book_id = data.get("id")
+            upload_book = UploadBook.objects.get(pk=book_id)
+            book = Book.objects.get(isbn=upload_book.isbn)
+            
+            book.stocks += 1
+            book.save()
+            upload_book.stocks += 1
+            upload_book.save()
+
+            return JsonResponse({"status": "success", "message": "Stok berhasil ditambah"}, status=200)
+        except UploadBook.DoesNotExist:
+            return JsonResponse({"status": "error", "message": "UploadBook tidak ditemukan"}, status=404)
+        except Book.DoesNotExist:
+            return JsonResponse({"status": "error", "message": "Buku tidak ditemukan"}, status=404)
+        except json.JSONDecodeError:
+            return JsonResponse({"status": "error", "message": "Invalid JSON"}, status=400)
+        except KeyError:
+            return JsonResponse({"status": "error", "message": "ID buku tidak disediakan"}, status=400)
+    else:
+        return JsonResponse({"status": "error", "message": "Invalid request method"}, status=405)
+
+@csrf_exempt
+def kurang_stocks_json(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            book_id = data.get("id")
+            upload_book = UploadBook.objects.get(pk=book_id)
+            book = Book.objects.get(isbn=upload_book.isbn)
+
+            if book.stocks > 0:
+                book.stocks -= 1
+                book.save()
+                upload_book.stocks -= 1
+                upload_book.save()
+
+                return JsonResponse({"status": "success", "message": "Stok berhasil dikurangi"}, status=200)
+            else:
+                return JsonResponse({"status": "error", "message": "Stok sudah habis"}, status=400)
+        except UploadBook.DoesNotExist:
+            return JsonResponse({"status": "error", "message": "UploadBook tidak ditemukan"}, status=404)
+        except Book.DoesNotExist:
+            return JsonResponse({"status": "error", "message": "Buku tidak ditemukan"}, status=404)
+        except json.JSONDecodeError:
+            return JsonResponse({"status": "error", "message": "Invalid JSON"}, status=400)
+        except KeyError:
+            return JsonResponse({"status": "error", "message": "ID buku tidak disediakan"}, status=400)
+    else:
+        return JsonResponse({"status": "error", "message": "Invalid request method"}, status=405)
+
