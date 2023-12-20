@@ -152,7 +152,7 @@ def insert_balance(request):
 def topup(request):
     if request.method == 'POST':
         data = json.loads(request.body)
-        jumlah = int(data.get("jumlah"))
+        jumlah = int(data.get("data"))
         profile = Profile.objects.get(user=request.user)
         profile.saldo += jumlah
         profile.save()
