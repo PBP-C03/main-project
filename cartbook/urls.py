@@ -14,5 +14,7 @@ urlpatterns = [
     path('tambah-amount-json/', tambah_amount_json, name='tambah_amount_json'),
     path('kurang-amount-json/', kurang_amount_json, name='kurang_amount_json'),
     path('add-note-json/', add_note_json, name='add_note_json'),
+    path('add-to-cart-json/', add_to_cart_json, name='add_to_cart_json'),
+
    
 ]

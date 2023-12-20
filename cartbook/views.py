@@ -227,3 +227,39 @@ def add_note_json(request):
         return JsonResponse({'success': False, 'error': 'Item not found'}, status=404)
     except json.JSONDecodeError:
         return JsonResponse({'success': False, 'error': 'Invalid JSON'}, status=400)
+
+@login_required
+@csrf_exempt
+def add_to_cart_json(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            book_id = data.get("book_id")
+
+            if not book_id:
+                return JsonResponse({'success': False, 'error': 'Missing book_id'}, status=400)
+
+            book = Book.objects.get(id=book_id)
+            user_cart, created = Cart.objects.get_or_create(user=request.user)
+
+            book_cart, created = Book_Cart.objects.get_or_create(book=book, carts=user_cart)
+
+            if created:
+                book_cart.amount = 1
+            else:
+                book_cart.amount += 1
+
+            book_cart.save()
+
+            user_cart.total_amount += 1
+            user_cart.total_harga += book.price
+            user_cart.save()
+
+            return JsonResponse({'success': True, 'amount': book_cart.amount, 'total_harga': user_cart.total_harga})
+
+        except Book.DoesNotExist:
+            return JsonResponse({'success': False, 'error': 'Book not found'}, status=404)
+        except json.JSONDecodeError:
+            return JsonResponse({'success': False, 'error': 'Invalid JSON'}, status=400)
+    else:
+        return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
