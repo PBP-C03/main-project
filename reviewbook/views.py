@@ -96,6 +96,7 @@ def delete_review(request, id, reviewId):
         return HttpResponse(b"DELETED", status=200)
     return HttpResponseNotFound()
 
+@csrf_exempt
 def create_review_flutter(request, id):
     if request.method == 'POST':
         data = json.loads(request.body)
